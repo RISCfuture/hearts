@@ -50,8 +50,8 @@ used. Overrides `-c`.
 
 `hearts.rb`: Generates emoji-art from the given options.
 
-`colors.txt`: A space- and newline-delimited database with the following values:
-emoji, average red, average green, average blue, standard deviation red,
+`db/colors.txt`: A space- and newline-delimited database with the following
+values: emoji, average red, average green, average blue, standard deviation red,
 standard deviation green, standard deviation blue.
 
 ### Rake Tasks

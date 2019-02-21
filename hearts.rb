@@ -27,7 +27,7 @@ if ARGV.size != 1
   exit 1
 end
 
-EMOJI_COLORS = File.read('colors.txt').each_line.inject({}) do |hsh, line|
+EMOJI_COLORS = File.read('db/colors.txt').each_line.inject({}) do |hsh, line|
   parts = line.split(' ')
   emoji = parts.first
   next(hsh) if options[:only] && !options[:only].include?(emoji)

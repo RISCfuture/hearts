@@ -59,7 +59,7 @@ namespace :colors do
 
     Emoji::CLI.extract(%w[images])
 
-    File.open('colors.txt', 'w') do |db|
+    File.open('db/colors.txt', 'w') do |db|
       Pathname('images/unicode').each_child do |image_path|
         codepoints = image_path.basename('.png').to_s.split('-')
         codepoints.map!(&:hex)
