@@ -3,12 +3,22 @@ require 'optparse'
 require 'bundler'
 Bundler.require
 
-options = Hash.new
+options = {coherency: 0.2}
 OptionParser.new do |opts|
   opts.banner = "Usage: hearts.rb [options] PATH_OR_URL"
 
-  opts.on('-rSTRING', '--resize=STRING', 'Resize image according to ImageMagick geometry') do |r|
+  opts.on('-rSTRING', '--resize=STRING', "Resize image according to ImageMagick geometry") do |r|
     options[:resize] = r
+  end
+
+  opts.on('-cCOHERENCY', '--coherency=COHERENCY', "Amount of monochrome required for an emoji to be used (lower is stricter, default 0.2)") do |c|
+    options[:coherency] = c.to_f
+    options[:coherency] = 0.2 if options[:coherency] <= 0
+    options[:coherency] = 1 if options[:coherency] > 1
+  end
+
+  opts.on('-oSTRING', '--only=STRING', "Only include emoji from this string (overrides -c)") do |o|
+    options[:only] = o
   end
 end.parse!
 
@@ -17,10 +27,16 @@ if ARGV.size != 1
   exit 1
 end
 
-
-HEARTS = File.read('hearts.txt').each_line.inject({}) do |hsh, line|
+EMOJI = File.read('db.txt').each_line.inject({}) do |hsh, line|
   parts = line.split(' ')
-  hsh[parts.first] = parts[1..-1].map(&:to_i)
+  emoji = parts.first
+  next(hsh) if options[:only] && !options[:only].include?(emoji)
+
+  average_color = parts[1, 3].map(&:to_f)
+  std_devs      = parts[4, 3].map(&:to_f)
+  next(hsh) if !options[:only] && std_devs.any? { |d| d > options[:coherency] }
+
+  hsh[emoji] = average_color.map { |c| (c * 256).to_i }
   hsh
 end.freeze
 
@@ -36,7 +52,7 @@ end
 
 def closest_heart(color)
   closest_heart = nil
-  HEARTS.each do |heart, heart_color|
+  EMOJI.each do |heart, heart_color|
     distance = color_distance(*color, *heart_color)
     if closest_heart
       closest_heart = [heart, distance] if distance < closest_heart.last
