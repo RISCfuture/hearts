@@ -30,7 +30,7 @@ end
 EMOJI_COLORS = File.read('db/colors.txt').each_line.inject({}) do |hsh, line|
   parts = line.split(' ')
   emoji = parts.first
-  next(hsh) if options[:only] && !options[:only].include?(emoji)
+  next(hsh) if options[:only].present? && !options[:only].include?(emoji)
 
   average_color = parts[1, 3].map(&:to_f)
   std_devs      = parts[4, 3].map(&:to_f)
