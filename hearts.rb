@@ -18,10 +18,10 @@ OptionParser.new do |opts|
     options[:resize] = r
   end
 
-  opts.on('-cCOHERENCY', '--coherency=COHERENCY', "Amount of monochrome required for an emoji to be used (lower is stricter, default 0.2)") do |c|
-    options[:coherency] = c.to_f
-    options[:coherency] = 0.2 if options[:coherency] <= 0
-    options[:coherency] = 1 if options[:coherency] > 1
+  opts.on('-cCOHERENCY', '--coherency=COHERENCY', Float, "Amount of monochrome required for an emoji to be used (lower is stricter, default 0.2)") do |c|
+    c = 0.2 if c <= 0
+    c = 1 if c > 1
+    options[:coherency] = c
   end
 
   opts.on('-oSTRING', '--only=STRING', "Only include emoji from this string or group name (overrides -c)") do |o|
