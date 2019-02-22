@@ -2,6 +2,13 @@ require 'optparse'
 
 require 'bundler'
 Bundler.require
+require 'active_support/core_ext/object/blank'
+
+GROUPS = File.read('db/groups.txt').each_line.inject({}) do |hsh, line|
+  name, chars = line.split(' ')
+  hsh[name]   = chars
+  hsh
+end
 
 options = {coherency: 0.2}
 OptionParser.new do |opts|
@@ -17,8 +24,12 @@ OptionParser.new do |opts|
     options[:coherency] = 1 if options[:coherency] > 1
   end
 
-  opts.on('-oSTRING', '--only=STRING', "Only include emoji from this string (overrides -c)") do |o|
-    options[:only] = o
+  opts.on('-oSTRING', '--only=STRING', "Only include emoji from this string or group name (overrides -c)") do |o|
+    if GROUPS.key?(o)
+      options[:only] = GROUPS[o]
+    else
+      options[:only] = o
+    end
   end
 end.parse!
 

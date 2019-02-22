@@ -33,6 +33,16 @@ Generates an emoji-art image using only heart emoji.
 
 ![Output preview](https://i.imgur.com/5waeG1r.png)
 
+``` sh
+ruby hearts.rb -oflags -r80 https://upload.wikimedia.org/wikipedia/en/thumb/a/a4/Flag_of_the_United_States.svg/1235px-Flag_of_the_United_States.svg.png
+```
+
+Generates an emoji-art image of the US flags using flag emoji. Note that, when
+using groups, the amount of monochromacy is ignored, and emoji with large color
+variety can be used, instead of just emoji with more generally uniform color.
+
+![Output preview](https://i.imgur.com/P4MUaq1.png)
+
 ### Options
 
 `-r`: Pass an [ImageMagick geometry string](https://imagemagick.org/script/command-line-processing.php#geometry)
@@ -43,8 +53,9 @@ per pixel of the original image!
 must be to be used. Higher numbers will use emoji that have more color variety.
 Default is 0.2.
 
-`-o`: Pass a string of emoji characters. Only characters from this set will be
-used. Overrides `-c`.
+`-o`: Pass a string of emoji characters, or a group name. Only characters from
+this string or group will be used. Group names are listed in `db/groups.txt` and
+include `flags`, `food`, and `hearts`, for example. Overrides `-c`.
 
 ### Files
 
@@ -58,6 +69,8 @@ standard deviation green, standard deviation blue.
 location of zero-width joiners ("zwjs") and variant characters to create
 composite emoji (such as man + woman + child).
 
+`db/groups.txt`: A space- and newline-delimited database of emoji group names.
+
 ### Rake Tasks
 
 `rake colors:generate`: Generates the `colors.txt` file from the emoji image
@@ -65,6 +78,8 @@ data in the Gemoji gem.
 
 `rake sequences:generate`: Generates the `sequences.txt` file from the Unicode
 reference web site.
+
+`rake groups:generate`: Generates the `groups.txt` file.
 
 ### Display Issues
 
@@ -81,7 +96,3 @@ on how the text is rendered on the viewer's platform. In particular:
   zwjs. On these platforms, the emoji will be displayed "decomposed" (e.g.,
   man + woman + child instead of the single man-woman-child emoji), which will
   mess up the fixed-width alignment.
-
-### Things to Do
-
-* Would be cool to use aliases for the `-o` tag (e.g., `-o flags`).
