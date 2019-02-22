@@ -54,10 +54,17 @@ used. Overrides `-c`.
 values: emoji, average red, average green, average blue, standard deviation red,
 standard deviation green, standard deviation blue.
 
+`db/sequences.txt`: A space- and newline-delimited database with the proper
+location of zero-width joiners ("zwjs") and variant characters to create
+composite emoji (such as man + woman + child).
+
 ### Rake Tasks
 
 `rake colors:generate`: Generates the `colors.txt` file from the emoji image
 data in the Gemoji gem.
+
+`rake sequences:generate`: Generates the `sequences.txt` file from the Unicode
+reference web site.
 
 ### Display Issues
 
@@ -75,10 +82,6 @@ on how the text is rendered on the viewer's platform. In particular:
   man + woman + child instead of the single man-woman-child emoji), which will
   mess up the fixed-width alignment.
 
-
 ### Things to Do
 
-* Currently the code in `generate-db.rb` flails about trying to figure out if
-  the `U+200D` zwj should be used. Some sort of canonical information about when
-  it should or should not be used to combine codepoints would be nice.
 * Would be cool to use aliases for the `-o` tag (e.g., `-o flags`).
