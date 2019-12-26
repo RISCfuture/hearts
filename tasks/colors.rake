@@ -10,7 +10,7 @@ namespace :colors do
     ZWJ                = 0x200d
     VARIATION_SELECTOR = 0xfe0f
 
-    SEQUENCES = File.read('db/sequences.txt').each_line.inject({}) do |hsh, line|
+    SEQUENCES = File.read('db/sequences.txt').each_line.each_with_object({}) do |line, hsh|
       emoji, *codepoints = line.split(' ')
 
       codepoints.map!(&:hex)
@@ -20,7 +20,6 @@ namespace :colors do
       raise "Duplicate codepoints #{codepoints.map { |c| c.to_s(16) }.join(' ')}" if hsh.key?(codepoints)
 
       hsh[codepoints] = emoji
-      hsh
     end
 
     def average_colors(image)

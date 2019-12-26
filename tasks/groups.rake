@@ -5,9 +5,8 @@ namespace :groups do
     Bundler.require
 
     def combine_emoji_groups(category, subcategories)
-      subcategories.inject([]) do |ary, subcategory|
+      subcategories.each_with_object([]) do |subcategory, ary|
         ary.concat Unicode::Emoji.list(category, subcategory)
-        ary
       end
     end
 
