@@ -5,7 +5,7 @@ Bundler.require
 require 'active_support/core_ext/object/blank'
 
 GROUPS = File.read('db/groups.txt').each_line.each_with_object({}) do |line, hsh|
-  name, chars = line.split(' ')
+  name, chars = line.split
   hsh[name]   = chars
 end
 
@@ -38,7 +38,7 @@ if ARGV.size != 1
 end
 
 EMOJI_COLORS = File.read('db/colors.txt').each_line.each_with_object({}) do |line, hsh|
-  parts = line.split(' ')
+  parts = line.split
   emoji = parts.first
   next(hsh) if options[:only].present? && !options[:only].include?(emoji)
 

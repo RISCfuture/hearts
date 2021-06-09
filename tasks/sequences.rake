@@ -8,7 +8,7 @@ namespace :sequences do
       Net::HTTP.get(url).each_line do |line|
         next if line.blank? || line.start_with?('#')
 
-        codepoints = line.split(';').first.strip.split(' ').map(&:hex)
+        codepoints = line.split(';').first.strip.split.map(&:hex)
         db.puts [codepoints.pack('U*').unicode_normalize, *codepoints.map { |c| c.to_s(16) }].join(' ')
       end
     end
