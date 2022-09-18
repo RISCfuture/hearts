@@ -1,13 +1,17 @@
 GEM
   remote: https://rubygems.org/
   specs:
+    gemoji (3.0.0)
     mini_magick (4.9.2)
+    unicode-emoji (2.0.0)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
+  gemoji
   mini_magick
+  unicode-emoji
 
 BUNDLED WITH
    2.0.1
