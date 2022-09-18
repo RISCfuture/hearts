@@ -27,7 +27,7 @@ if ARGV.size != 1
   exit 1
 end
 
-EMOJI = File.read('db.txt').each_line.inject({}) do |hsh, line|
+EMOJI_COLORS = File.read('colors.txt').each_line.inject({}) do |hsh, line|
   parts = line.split(' ')
   emoji = parts.first
   next(hsh) if options[:only] && !options[:only].include?(emoji)
@@ -52,7 +52,7 @@ end
 
 def closest_heart(color)
   closest_heart = nil
-  EMOJI.each do |heart, heart_color|
+  EMOJI_COLORS.each do |heart, heart_color|
     distance = color_distance(*color, *heart_color)
     if closest_heart
       closest_heart = [heart, distance] if distance < closest_heart.last
