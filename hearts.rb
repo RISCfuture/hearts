@@ -40,7 +40,7 @@ end
 EMOJI_COLORS = File.read('db/colors.txt').each_line.each_with_object({}) do |line, hsh|
   parts = line.split
   emoji = parts.first
-  next(hsh) if options[:only].present? && !options[:only].include?(emoji)
+  next(hsh) if options[:only].present? && options[:only].exclude?(emoji)
 
   average_color = parts[1, 3].map(&:to_f)
   std_devs      = parts[4, 3].map(&:to_f)
@@ -55,7 +55,7 @@ def color_distance(r1, g1, b1, r2, g2, b2)
   dr    = r1 - r2
   dg    = g1 - g2
   db    = b1 - b2
-  Math.sqrt((2 + r_bar / 256) * (dr ** 2) + 4 * (dg ** 2) + (2 + (255 - r_bar) / 256) * (db ** 2))
+  Math.sqrt(((2 + (r_bar / 256)) * (dr ** 2)) + (4 * (dg ** 2)) + ((2 + ((255 - r_bar) / 256)) * (db ** 2)))
   # Math.sqrt(dr**2 + dg**2 + db**2)
 end
 
