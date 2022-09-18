@@ -1,3 +1,18 @@
+ZWJ                = 0x200d
+VARIATION_SELECTOR = 0xfe0f
+
+SEQUENCES = File.read('db/sequences.txt').each_line.each_with_object({}) do |line, hsh|
+  emoji, *codepoints = line.split
+
+  codepoints.map!(&:hex)
+  codepoints.delete ZWJ
+  codepoints.delete VARIATION_SELECTOR
+
+  raise "Duplicate codepoints #{codepoints.map { |c| c.to_s(16) }.join(' ')}" if hsh.key?(codepoints)
+
+  hsh[codepoints] = emoji
+end
+
 namespace :colors do
   desc "Regenerate the colors.txt file"
   task :generate do
@@ -6,21 +21,6 @@ namespace :colors do
     require 'bundler'
     Bundler.require
     require 'emoji/cli'
-
-    ZWJ                = 0x200d
-    VARIATION_SELECTOR = 0xfe0f
-
-    SEQUENCES = File.read('db/sequences.txt').each_line.each_with_object({}) do |line, hsh|
-      emoji, *codepoints = line.split(' ')
-
-      codepoints.map!(&:hex)
-      codepoints.delete ZWJ
-      codepoints.delete VARIATION_SELECTOR
-
-      raise "Duplicate codepoints #{codepoints.map { |c| c.to_s(16) }.join(' ')}" if hsh.key?(codepoints)
-
-      hsh[codepoints] = emoji
-    end
 
     def average_colors(image)
       # total # of samples
