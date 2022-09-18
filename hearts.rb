@@ -4,10 +4,9 @@ require 'bundler'
 Bundler.require
 require 'active_support/core_ext/object/blank'
 
-GROUPS = File.read('db/groups.txt').each_line.inject({}) do |hsh, line|
+GROUPS = File.read('db/groups.txt').each_line.each_with_object({}) do |line, hsh|
   name, chars = line.split(' ')
   hsh[name]   = chars
-  hsh
 end
 
 options = {coherency: 0.2}
@@ -25,11 +24,11 @@ OptionParser.new do |opts|
   end
 
   opts.on('-oSTRING', '--only=STRING', "Only include emoji from this string or group name (overrides -c)") do |o|
-    if GROUPS.key?(o)
-      options[:only] = GROUPS[o]
-    else
-      options[:only] = o
-    end
+    options[:only] = if GROUPS.key?(o)
+                       GROUPS[o]
+                     else
+                       o
+                     end
   end
 end.parse!
 
@@ -38,7 +37,7 @@ if ARGV.size != 1
   exit 1
 end
 
-EMOJI_COLORS = File.read('db/colors.txt').each_line.inject({}) do |hsh, line|
+EMOJI_COLORS = File.read('db/colors.txt').each_line.each_with_object({}) do |line, hsh|
   parts = line.split(' ')
   emoji = parts.first
   next(hsh) if options[:only].present? && !options[:only].include?(emoji)
@@ -48,7 +47,6 @@ EMOJI_COLORS = File.read('db/colors.txt').each_line.inject({}) do |hsh, line|
   next(hsh) if !options[:only] && std_devs.any? { |d| d > options[:coherency] }
 
   hsh[emoji] = average_color.map { |c| (c * 256).to_i }
-  hsh
 end.freeze
 
 # https://en.wikipedia.org/wiki/Color_difference
