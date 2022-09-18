@@ -7,12 +7,20 @@ namespace :colors do
     Bundler.require
     require 'emoji/cli'
 
-    class Array
-      def intersperse!(obj)
-        (size - 1).downto(1) do |i|
-          insert i, obj
-        end
-      end
+    ZWJ                = 0x200d
+    VARIATION_SELECTOR = 0xfe0f
+
+    SEQUENCES = File.read('db/sequences.txt').each_line.inject({}) do |hsh, line|
+      emoji, *codepoints = line.split(' ')
+
+      codepoints.map!(&:hex)
+      codepoints.delete ZWJ
+      codepoints.delete VARIATION_SELECTOR
+
+      raise "Duplicate codepoints #{codepoints.map { |c| c.to_s(16) }.join(' ')}" if hsh.key?(codepoints)
+
+      hsh[codepoints] = emoji
+      hsh
     end
 
     def average_colors(image)
@@ -57,18 +65,21 @@ namespace :colors do
       return [rm, gm, bm], [rsd, gsd, bsd]
     end
 
+    def emoji_for_codepoints(codepoints)
+      return codepoints.pack('U') if codepoints.size == 1
+      raise "Unknown emoji #{codepoints.map { |c| c.to_s(16) }.join(' ')}" unless SEQUENCES.key?(codepoints)
+
+      return SEQUENCES[codepoints]
+    end
+
     Emoji::CLI.extract(%w[images])
 
     File.open('db/colors.txt', 'w') do |db|
       Pathname('images/unicode').each_child do |image_path|
         codepoints = image_path.basename('.png').to_s.split('-')
         codepoints.map!(&:hex)
-        non_joined_emoji = codepoints.pack('U*').unicode_normalize
 
-        codepoints.intersperse! 0x200d # add combiners
-        joined_emoji = codepoints.pack('U*').unicode_normalize
-
-        emoji = (non_joined_emoji.scan(Unicode::Emoji::REGEX_VALID_INCLUDE_TEXT).size == 1) ? non_joined_emoji : joined_emoji
+        emoji = emoji_for_codepoints(codepoints)
 
         image                  = MiniMagick::Image.open(image_path.to_s)
         average_color, std_dev = average_colors(image)
