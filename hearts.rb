@@ -1,10 +1,12 @@
-require 'optparse'
+# frozen_string_literal: true
 
-require 'bundler'
+require "optparse"
+
+require "bundler"
 Bundler.require
-require 'active_support/core_ext/object/blank'
+require "active_support/core_ext/object/blank"
 
-GROUPS = File.read('db/groups.txt').each_line.each_with_object({}) do |line, hsh|
+GROUPS = File.read("db/groups.txt").each_line.each_with_object({}) do |line, hsh|
   name, chars = line.split
   hsh[name]   = chars
 end
@@ -13,17 +15,17 @@ options = {coherency: 0.2}
 OptionParser.new do |opts|
   opts.banner = "Usage: hearts.rb [options] PATH_OR_URL"
 
-  opts.on('-rSTRING', '--resize=STRING', "Resize image according to ImageMagick geometry") do |r|
+  opts.on("-rSTRING", "--resize=STRING", "Resize image according to ImageMagick geometry") do |r|
     options[:resize] = r
   end
 
-  opts.on('-cCOHERENCY', '--coherency=COHERENCY', Float, "Amount of monochrome required for an emoji to be used (lower is stricter, default 0.2)") do |c|
+  opts.on("-cCOHERENCY", "--coherency=COHERENCY", Float, "Amount of monochrome required for an emoji to be used (lower is stricter, default 0.2)") do |c|
     c = 0.2 if c <= 0
     c = 1 if c > 1
     options[:coherency] = c
   end
 
-  opts.on('-oSTRING', '--only=STRING', "Only include emoji from this string or group name (overrides -c)") do |o|
+  opts.on("-oSTRING", "--only=STRING", "Only include emoji from this string or group name (overrides -c)") do |o|
     options[:only] = if GROUPS.key?(o)
                        GROUPS[o]
                      else
@@ -37,7 +39,7 @@ if ARGV.size != 1
   exit 1
 end
 
-EMOJI_COLORS = File.read('db/colors.txt').each_line.each_with_object({}) do |line, hsh|
+EMOJI_COLORS = File.read("db/colors.txt").each_line.each_with_object({}) do |line, hsh|
   parts = line.split
   emoji = parts.first
   next(hsh) if options[:only].present? && options[:only].exclude?(emoji)

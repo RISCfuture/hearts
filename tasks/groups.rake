@@ -1,7 +1,9 @@
+# frozen_string_literal: true
+
 namespace :groups do
   desc "Generates the groups.txt database"
   task :generate do
-    require 'bundler'
+    require "bundler"
     Bundler.require
 
     def combine_emoji_groups(category, subcategories)
@@ -15,37 +17,37 @@ namespace :groups do
     end
 
     def add_emoji_gem_groups(db)
-      people = combine_emoji_groups('People & Body',
+      people = combine_emoji_groups("People & Body",
                                     %w[person person-gesture person-role person-fantasy person-activity person-sport person-resting])
       db.puts("people #{people.join}")
 
-      animals = combine_emoji_groups('Animals & Nature',
+      animals = combine_emoji_groups("Animals & Nature",
                                      %w[animal-mammal animal-bird animal-amphibian animal-reptile animal-marine animal-bug])
       db.puts("animals #{animals.join}")
-      plants = combine_emoji_groups('Animals & Nature',
+      plants = combine_emoji_groups("Animals & Nature",
                                     %w[plant-flower plant-other])
       db.puts("plants #{plants.join}")
-      db.puts("flowers #{Unicode::Emoji.list('Animals & Nature', 'plant-flower').join}")
+      db.puts("flowers #{Unicode::Emoji.list("Animals & Nature", "plant-flower").join}")
 
-      food_drink = Unicode::Emoji.list('Food & Drink').values.flatten - Unicode::Emoji.list('Food & Drink', 'dishware')
+      food_drink = Unicode::Emoji.list("Food & Drink").values.flatten - Unicode::Emoji.list("Food & Drink", "dishware")
       db.puts("food-drink #{food_drink.join}")
-      db.puts("food #{(food_drink - Unicode::Emoji.list('Food & Drink', 'drink')).join}")
-      db.puts("drink #{Unicode::Emoji.list('Food & Drink', 'drink').join}")
+      db.puts("food #{(food_drink - Unicode::Emoji.list("Food & Drink", "drink")).join}")
+      db.puts("drink #{Unicode::Emoji.list("Food & Drink", "drink").join}")
 
-      vehicles = combine_emoji_groups('Travel & Places', %w[transport-ground transport-water transport-air])
+      vehicles = combine_emoji_groups("Travel & Places", %w[transport-ground transport-water transport-air])
       "\u{1f68f}\u{1f6e3}\u{1f6e4}\u{1f6e2}\u{26fd}\u{1f6a8}\u{1f6a5}\u{1f6a6}\u{2693}".each_char do |c|
         vehicles.delete c
       end
       db.puts("vehicles #{vehicles.join}")
 
-      db.puts("sports #{Unicode::Emoji.list('Activities', 'sport').join}")
+      db.puts("sports #{Unicode::Emoji.list("Activities", "sport").join}")
 
-      db.puts("clothes #{Unicode::Emoji.list('Objects', 'clothing').join}")
+      db.puts("clothes #{Unicode::Emoji.list("Objects", "clothing").join}")
 
-      db.puts("flags #{Unicode::Emoji.list('Flags', 'country-flag').join}")
+      db.puts("flags #{Unicode::Emoji.list("Flags", "country-flag").join}")
     end
 
-    File.open('db/groups.txt', 'w') do |db|
+    File.open("db/groups.txt", "w") do |db|
       add_hardcoded_groups(db)
       add_emoji_gem_groups(db)
     end
