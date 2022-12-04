@@ -3,7 +3,7 @@
 ZWJ                = 0x200d
 VARIATION_SELECTOR = 0xfe0f
 
-SEQUENCES = File.read("db/sequences.txt").each_line.each_with_object({}) do |line, hsh|
+SEQUENCES = File.read("db/sequences.txt").each_line.with_object({}) do |line, hsh|
   emoji, *codepoints = line.split
 
   codepoints.map!(&:hex)

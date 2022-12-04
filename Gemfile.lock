@@ -23,9 +23,9 @@ PLATFORMS
 
 DEPENDENCIES
   activesupport
-  gemoji
+  gemoji (< 4)
   mini_magick
   unicode-emoji
 
 BUNDLED WITH
-   2.3.24
+   2.3.26
