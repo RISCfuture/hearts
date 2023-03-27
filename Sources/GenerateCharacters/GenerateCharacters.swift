@@ -5,8 +5,8 @@ import ArgumentParser
 struct GenerateCharacters: AsyncParsableCommand {
     @Option(name: .shortAndLong,
             help: "The Unicode Emoji specification version")
-    var emojiVersion = "14.0"
-    
+    var emojiVersion = "15.0"
+
     @Argument(help: "The .txt file to write to",
               completion: .file(extensions: [".txt"]),
               transform: { URL(filePath: $0) })

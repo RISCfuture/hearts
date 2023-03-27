@@ -10,8 +10,8 @@ fileprivate let customGroups = [
 struct GenerateGroups: AsyncParsableCommand {
     @Option(name: .shortAndLong,
             help: "The Unicode Emoji specification version")
-    var emojiVersion = "14.0"
-    
+    var emojiVersion = "15.0"
+
     @Argument(help: "The .json file to write to",
               completion: .file(extensions: [".json"]),
               transform: { URL(filePath: $0) })

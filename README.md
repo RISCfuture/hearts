@@ -21,15 +21,15 @@ swift run Hearts -w 80 https://placekitten.com/200/300
 This will generate an 80-character-wide emoji-art version of a local or
 web-accessible image.
 
-![Output preview](https://i.imgur.com/fgJBiId.png)
+![Output preview](https://i.imgur.com/GbWvQms.png)
 
 ``` sh
-swift run Hearts -w 80 --only ❤️🧡💛💚💙💜🖤 /Library/Desktop\ Pictures/High\ Sierra.jpg
+swift run Hearts -w 80 --only ❤️🧡💛💚💙💜🩷🤎🖤🤍 /System/Library/Desktop\ Pictures/Ventura\ Graphic.heic
 ```
 
 Generates an emoji-art image using only heart emoji.
 
-![Output preview](https://i.imgur.com/5waeG1r.png)
+![Output preview](https://i.imgur.com/81kyXtd.png)
 
 ``` sh
 swift run Hearts -w 80 --only flags https://upload.wikimedia.org/wikipedia/en/thumb/a/a4/Flag_of_the_United_States.svg/1235px-Flag_of_the_United_States.svg.png
@@ -39,7 +39,7 @@ Generates an emoji-art image of the US flags using flag emoji. Note that, when
 using groups, the amount of monochromacy is ignored, and emoji with large color
 variety can be used, instead of just emoji with more generally uniform color.
 
-![Output preview](https://i.imgur.com/P4MUaq1.png)
+![Output preview](https://i.imgur.com/DgkAGRB.png)
 
 ### Options
 
