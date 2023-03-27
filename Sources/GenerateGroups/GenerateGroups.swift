@@ -56,16 +56,18 @@ struct GenerateGroups: AsyncParsableCommand {
             } else if line.starts(with: "#") {
                 continue
             } else {
-                let char = try parseEmoji(from: line)
+                guard let char = try parseEmoji(from: line) else { continue }
                 try groups.addChar(char)
             }
         }
         
         return groups
     }
-    
-    private func parseEmoji(from line: String) throws -> Character {
+
+    private func parseEmoji(from line: String) throws -> Character? {
         let parts = line.split(separator: ";")
+        guard parts[1].trimmingCharacters(in: .whitespaces).starts(with: "fully-qualified") else { return nil }
+
         let codepointsString = parts[0].trimmingCharacters(in: .whitespaces)
         let codepointsStrings = codepointsString.split(separator: " ")
         let codepoints = try codepointsStrings.map {
