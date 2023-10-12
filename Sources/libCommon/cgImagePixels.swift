@@ -2,12 +2,12 @@ import Foundation
 import CoreGraphics
 import CoreImage
 
-public func cgImage(from ciImage: CIImage) -> CGImage? {
+package func cgImage(from ciImage: CIImage) -> CGImage? {
     let context = CIContext()
     return context.createCGImage(ciImage, from: ciImage.extent)
 }
 
-public func cgImagePixels(_ image: CGImage) -> PixelSequence? {
+package func cgImagePixels(_ image: CGImage) -> PixelSequence? {
     let bitmapInfo = CGBitmapInfo.byteOrder32Big.rawValue | CGImageAlphaInfo.premultipliedLast.rawValue
     guard let context = CGContext(data: nil,
                                   width: image.width,
@@ -24,20 +24,20 @@ public func cgImagePixels(_ image: CGImage) -> PixelSequence? {
     return .init(Data(bytes: data, count: image.width * image.height * 4))
 }
 
-public struct PixelSequence: Sequence {
+package struct PixelSequence: Sequence {
     private let data: Data
     
     init(_ data: Data) {
         self.data = data
     }
     
-    public func makeIterator() -> Iterator {
+    package func makeIterator() -> Iterator {
         .init(data: data)
     }
     
-    public typealias Element = ColorAlpha
+    package typealias Element = ColorAlpha
     
-    public struct Iterator: IteratorProtocol {
+    package struct Iterator: IteratorProtocol {
         private let data: Data
         private var counter = 0
         
@@ -45,7 +45,7 @@ public struct PixelSequence: Sequence {
             self.data = data
         }
         
-        public mutating func next() -> ColorAlpha? {
+        package mutating func next() -> ColorAlpha? {
             if counter*4 + 3 >= data.count { return nil }
             defer { counter += 1 }
             
@@ -65,15 +65,15 @@ public struct PixelSequence: Sequence {
                          alpha: af)
         }
         
-        public typealias Element = ColorAlpha
+        package typealias Element = ColorAlpha
     }
 }
 
-public struct ColorAlpha {
-    public let red: Float
-    public let green: Float
-    public let blue: Float
-    public let alpha: Float
+package struct ColorAlpha {
+    package let red: Float
+    package let green: Float
+    package let blue: Float
+    package let alpha: Float
     
     internal init(red: Float, green: Float, blue: Float, alpha: Float) {
         self.red = red
@@ -82,7 +82,7 @@ public struct ColorAlpha {
         self.alpha = alpha
     }
     
-    public func premultiply(background: Color) throws -> Color {
+    package func premultiply(background: Color) throws -> Color {
         return try .init(red: red*alpha + background.red*(1-alpha),
                      green: green*alpha + background.green*(1-alpha),
                      blue: blue*alpha + background.blue*(1-alpha))
@@ -94,9 +94,9 @@ public struct Color: Codable {
     public let green: Float
     public let blue: Float
     
-    public static let black = try! Color(red: 0, green: 0, blue: 0)
+    package static let black = try! Color(red: 0, green: 0, blue: 0)
     
-    public init(red: Float, green: Float, blue: Float) throws {
+    package init(red: Float, green: Float, blue: Float) throws {
         guard Self.validColorComponent(red) &&
                 Self.validColorComponent(green) &&
                 Self.validColorComponent(blue) else { throw Error.invalidColor }
@@ -106,7 +106,7 @@ public struct Color: Codable {
         self.blue = blue
     }
     
-    public init(_ values: Array<Float>) throws {
+    package init(_ values: Array<Float>) throws {
         guard values.count == 3 else { throw Error.invalidColor }
         try self.init(red: values[0], green: values[1], blue: values[2])
     }

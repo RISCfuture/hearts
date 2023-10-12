@@ -85,7 +85,7 @@
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "/Users/tmorgan/Dropbox/Public/Avatars/Headshot.jpeg"
+            argument = "/Users/tmorgan/Documents/Avatars/Headshot.jpeg"
             isEnabled = "YES">
          </CommandLineArgument>
       </CommandLineArguments>

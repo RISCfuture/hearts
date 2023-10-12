@@ -2,18 +2,20 @@ name: CI
 
 on:
   push:
-    branches: [ master ]
+    branches: [master]
   pull_request:
-    branches: [ master ]
+    branches: [master]
 
 jobs:
   build:
     name: Build and Test
-    runs-on: macos-latest
+    runs-on: macos-14
     steps:
-    - uses: actions/checkout@v2
-    - uses: fwal/setup-swift@v1
-    - name: Build
-      run: swift build
-    - name: Test
-      run: swift test
+      - uses: actions/checkout@v4
+      - uses: fwal/setup-swift@v1
+        with:
+          swift-version: 5.9
+      - name: Build
+        run: swift build
+      - name: Test
+        run: swift test
