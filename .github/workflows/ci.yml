@@ -1,21 +1,25 @@
-name: CI
+name: Build
 
 on:
   push:
-    branches: [master]
+    branches: [main]
   pull_request:
-    branches: [master]
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  build:
+  tests:
     name: Build and Test
-    runs-on: macos-14
+    strategy:
+      fail-fast: false
+    runs-on: macos-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: fwal/setup-swift@v1
-        with:
-          swift-version: 5.9
+      - uses: actions/checkout@v3
+      - uses: swift-actions/setup-swift@v2
       - name: Build
-        run: swift build
-      - name: Test
+        run: swift build -v
+      - name: Tests
         run: swift test
