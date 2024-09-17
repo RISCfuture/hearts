@@ -25,8 +25,7 @@ let package = Package(
     targets: [
         // Targets are the basic building blocks of a package. A target can define a module or a test suite.
         // Targets can depend on other targets in this package, and on products in packages this package depends on.
-        .target(name: "libCommon",
-                resources: [.process("Resources")]),
+        .target(name: "libCommon"),
         .target(name: "libHearts",
                 dependencies: ["libCommon"],
                 resources: [.process("Resources")]),

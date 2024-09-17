@@ -1,0 +1,33 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "Confirm that your list of characters includes only emoji." : {
+      "comment" : "recovery suggestion"
+    },
+    "Confirm the group name is correct." : {
+      "comment" : "recovery suggestion"
+    },
+    "Image could not be read" : {
+      "comment" : "error"
+    },
+    "No emoji characters in set" : {
+      "comment" : "error"
+    },
+    "Not an emoji character: %@" : {
+      "comment" : "error"
+    },
+    "One of the characters you supplied is not an emoji." : {
+      "comment" : "failure reason"
+    },
+    "The image is corrupt or not in a supported format." : {
+      "comment" : "failure reason"
+    },
+    "Try converting the image to a supported format first." : {
+      "comment" : "recovery suggestion"
+    },
+    "You may have specified an invalid group name or non-emoji characters." : {
+      "comment" : "failure reason"
+    }
+  },
+  "version" : "1.0"
+}

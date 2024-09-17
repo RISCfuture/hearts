@@ -1,0 +1,15 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "An invalid RGB color was specified." : {
+      "comment" : "error"
+    },
+    "Invalid color specified" : {
+      "comment" : "error"
+    },
+    "Verify the RGB color components are correct." : {
+      "comment" : "error"
+    }
+  },
+  "version" : "1.0"
+}

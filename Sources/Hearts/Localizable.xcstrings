@@ -1,0 +1,63 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "Background colors must be specified as comma-delimited RGB floats (e.g., “0.5,0.0,1.0”)" : {
+      "comment" : "failure reason"
+    },
+    "Bad response from net request" : {
+      "comment" : "error"
+    },
+    "Check the formatting of your background color" : {
+      "comment" : "recovery suggestion"
+    },
+    "Check the URL to make sure it is working properly." : {
+      "comment" : "recovery suggestion"
+    },
+    "Core Image couldn’t parse the image file." : {
+      "comment" : "failure reason"
+    },
+    "Couldn’t load image" : {
+      "comment" : "error"
+    },
+    "Couldn’t resize image" : {
+      "comment" : "error"
+    },
+    "Invalid background color" : {
+      "comment" : "error"
+    },
+    "Invalid URL: %@" : {
+      "comment" : "error"
+    },
+    "Make sure you are specifying the complete URL, including the scheme." : {
+      "comment" : "recovery suggestion"
+    },
+    "No such file: %@" : {
+      "comment" : "error"
+    },
+    "Non-successful HTTP response code %lld." : {
+      "comment" : "failure reason"
+    },
+    "Response was not recognized as an HTTP response." : {
+      "comment" : "failure reason"
+    },
+    "That URL couldn’t be parsed." : {
+      "comment" : "failure reason"
+    },
+    "The resize parameter may have been invalid." : {
+      "comment" : "failure reason"
+    },
+    "There is no file at that location." : {
+      "comment" : "failure reason"
+    },
+    "Try using a different resize parameter." : {
+      "comment" : "recovery suggestion"
+    },
+    "Verify that the file is a supported image type." : {
+      "comment" : "recovery suggestion"
+    },
+    "Verify that the image file exists at that location." : {
+      "comment" : "recovery suggestion"
+    }
+  },
+  "version" : "1.0"
+}
