@@ -1,27 +1,28 @@
 import Foundation
-import CoreImage
+@preconcurrency import CoreImage
 import libCommon
 
-public class EmojiArt {
+public actor EmojiArt {
     public static let defaultCoherency: Float = 0.2
     public var backgroundColor = Color.black
-    
+    public func setBackgroundColor(_ color: Color) { backgroundColor = color }
+
     public let characters: Set<Character>
     
-    public convenience init(coherency: Float = EmojiArt.defaultCoherency) throws {
-        try self.init(characters: ColorData.shared.emojiWithCoherency(coherency))
+    public init(coherency: Float = EmojiArt.defaultCoherency) async throws {
+        try await self.init(characters: ColorData.shared.emojiWithCoherency(coherency))
     }
     
     public init(characters: Set<Character>) throws {
         self.characters = characters
     }
     
-    public convenience init(group: String) throws {
-        try self.init(characters: Groups.shared.characters(for: group))
+    public init(group: String) async throws {
+        try await self.init(characters: Groups.shared.characters(for: group))
     }
     
-    public convenience init(groups: Array<String>) throws {
-        try self.init(characters: Groups.shared.characters(for: groups))
+    public init(groups: Array<String>) async throws {
+        try await self.init(characters: Groups.shared.characters(for: groups))
     }
     
     public func process(image: CIImage) async throws -> String {
@@ -33,7 +34,7 @@ public class EmojiArt {
 
             for (n, pixel) in pixels.enumerated() {
                 group.addTask {
-                    let char = self.closestEmoji(for: try pixel.premultiply(background: self.backgroundColor)) ?? " "
+                    let char = await self.closestEmoji(for: try pixel.premultiply(background: self.backgroundColor)) ?? " "
                     return (n, char)
                 }
             }
@@ -48,14 +49,24 @@ public class EmojiArt {
             .joined(separator: "\n")
     }
     
-    private func closestEmoji(for color: Color) -> Character? {
-        characters.min(by: { char1, char2 in
-            let char1Color = ColorData.shared.for(char1)!
-            let char2Color = ColorData.shared.for(char2)!
-            let dist1 = distance2(char1Color.mean, color)
-            let dist2 = distance2(char2Color.mean, color)
-            return dist1 < dist2
-        })
+    private func closestEmoji(for color: Color) async -> Character? {
+        var min: Character? = nil, minDist: Float? = nil
+        for character in characters {
+            let charColor = await ColorData.shared.for(character)!,
+                dist = distance2(charColor.mean, color)
+
+            guard min != nil, minDist != nil else {
+                min = character
+                minDist = dist
+                continue
+            }
+            if dist < minDist! {
+                min = character
+                minDist = dist
+            }
+        }
+
+        return min
     }
     
     private func distance2(_ a: Color, _ b: Color) -> Float {

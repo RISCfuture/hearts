@@ -89,7 +89,7 @@ package struct ColorAlpha {
     }
 }
 
-public struct Color: Codable {
+public struct Color: Codable, Sendable {
     public let red: Float
     public let green: Float
     public let blue: Float

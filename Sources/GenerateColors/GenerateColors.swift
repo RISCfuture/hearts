@@ -20,8 +20,8 @@ struct GenerateColors: AsyncParsableCommand {
     }
     
     mutating func run() async throws {
-        ProgressWrapper.shared.setTotal(characters.count)
-        
+        await ProgressWrapper.shared.setTotal(characters.count)
+
         let averages = try await averageColors().map { (character, data) in
             [String(character),
              data.mean.red, data.mean.green, data.mean.blue,
@@ -80,7 +80,7 @@ struct GenerateColors: AsyncParsableCommand {
             for character in characters {
                 group.addTask {
                     let image = try await characterToImage(character)
-                    ProgressWrapper.shared.next()
+                    await ProgressWrapper.shared.next()
                     return (character, image)
                 }
             }
@@ -100,7 +100,7 @@ struct GenerateColors: AsyncParsableCommand {
             for (character, image) in images {
                 group.addTask {
                     let avg = try averageColors(image: image)
-                    ProgressWrapper.shared.next()
+                    await ProgressWrapper.shared.next()
                     return (character, avg)
                 }
             }
@@ -171,7 +171,7 @@ enum Error: Swift.Error {
     case pixelDataError
 }
 
-class ProgressWrapper {
+actor ProgressWrapper {
     private var progress: ProgressBar!
     private static let operations = 2
     

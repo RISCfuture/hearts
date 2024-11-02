@@ -1,6 +1,6 @@
 import Foundation
 
-final class Groups {
+actor Groups {
     static let shared = try! Groups()
     
     private let dataURL = Bundle.module.url(forResource: "groups", withExtension: "json")!
