@@ -44,16 +44,16 @@ struct Hearts: AsyncParsableCommand {
         if let characters = parseOnlyCharacters() {
             emojiArt = try EmojiArt(characters: characters)
         } else if let groups = parseOnlyGroups() {
-            emojiArt = try EmojiArt(groups: groups)
+            emojiArt = try await EmojiArt(groups: groups)
         } else if let coherency = coherency {
-            emojiArt = try EmojiArt(coherency: coherency)
+            emojiArt = try await EmojiArt(coherency: coherency)
         } else {
-            emojiArt = try EmojiArt()
+            emojiArt = try await EmojiArt()
         }
-        emojiArt.backgroundColor = background
+        await emojiArt.setBackgroundColor(background)
         
         if glyphCount {
-            print("\(emojiArt.characters.count)")
+            await print("\(emojiArt.characters.count)")
             return
         }
         

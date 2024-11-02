@@ -1,4 +1,4 @@
-// swift-tools-version: 5.10
+// swift-tools-version: 6.0
 // The swift-tools-version declares the minimum version of Swift required to build this package.
 
 import PackageDescription
@@ -6,7 +6,7 @@ import PackageDescription
 let package = Package(
     name: "Hearts",
     defaultLocalization: "en",
-    platforms: [.macOS(.v14)],
+    platforms: [.macOS(.v13)],
     products: [
         // Products define the executables and libraries a package produces, and make them visible to other packages.
         .library(name: "libHearts", targets: ["libHearts"]),
@@ -17,23 +17,25 @@ let package = Package(
     ],
     dependencies: [
         // Dependencies declare other packages that this package depends on.
-        .package(url: "https://github.com/apple/swift-argument-parser.git", .upToNextMajor(from: "1.0.0")),
+        .package(url: "https://github.com/apple/swift-argument-parser.git", .upToNextMajor(from: "1.5.0")),
         .package(url: "https://github.com/jkandzi/Progress.swift.git", .upToNextMajor(from: "0.4.0")),
-        .package(url: "https://github.com/Quick/Quick.git", from: "6.0.0"),
-        .package(url: "https://github.com/Quick/Nimble.git", from: "11.0.0")
+        .package(url: "https://github.com/Quick/Quick.git", from: "7.6.2"),
+        .package(url: "https://github.com/Quick/Nimble.git", from: "13.6.0")
     ],
     targets: [
         // Targets are the basic building blocks of a package. A target can define a module or a test suite.
         // Targets can depend on other targets in this package, and on products in packages this package depends on.
-        .target(name: "libCommon"),
+        .target(name: "libCommon",
+                resources: [.process("Localizable.xcstrings")]),
         .target(name: "libHearts",
                 dependencies: ["libCommon"],
-                resources: [.process("Resources")]),
+                resources: [.copy("Resources"), .process("Localizable.xcstrings")]),
         .executableTarget(name: "Hearts",
                           dependencies: [
                             "libHearts",
                             .product(name: "ArgumentParser", package: "swift-argument-parser")
-                          ]),
+                          ],
+                          resources: [.process("Localizable.xcstrings")]),
         .testTarget(name: "HeartsTests",
                     dependencies: ["libHearts", "Nimble", "Quick"],
                     resources: [.process("Resources")]),
@@ -52,7 +54,8 @@ let package = Package(
                           dependencies: [
                             .product(name: "ArgumentParser", package: "swift-argument-parser")
                           ])
-    ]
+    ],
+    swiftLanguageModes: [.v6]
 )
 
 

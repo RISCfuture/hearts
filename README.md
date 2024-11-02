@@ -6,7 +6,7 @@ Generates images made of emoji characters ("emoji-art").
 Installation
 ------------
 
-This script uses Swift 5.7 and Swift Package Manager. Run `swift build` to build
+This script uses Swift 6 and Swift Package Manager. Run `swift build` to build
 all targets.
 
 Usage

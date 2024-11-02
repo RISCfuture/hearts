@@ -1,7 +1,7 @@
 import Foundation
 import libCommon
 
-final class ColorData {
+actor ColorData {
     static let shared = try! ColorData()
     
     private let dataURL = Bundle.module.url(forResource: "colors", withExtension: "json")!
