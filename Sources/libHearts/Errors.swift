@@ -17,7 +17,7 @@ extension Error: LocalizedError {
                 return String(localized: "Image could not be read", comment: "error")
         }
     }
-    
+
     public var failureReason: String? {
         switch self {
             case .noCharacters:
@@ -28,7 +28,7 @@ extension Error: LocalizedError {
                 return String(localized: "The image is corrupt or not in a supported format.", comment: "failure reason")
         }
     }
-    
+
     public var recoverySuggestion: String? {
         switch self {
             case .noCharacters:

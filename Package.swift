@@ -13,7 +13,7 @@ let package = Package(
         .executable(name: "Hearts", targets: ["Hearts"]),
         .executable(name: "GenerateColors", targets: ["GenerateColors"]),
         .executable(name: "GenerateGroups", targets: ["GenerateGroups"]),
-        .executable(name: "GenerateCharacters", targets: ["GenerateCharacters"]),
+        .executable(name: "GenerateCharacters", targets: ["GenerateCharacters"])
     ],
     dependencies: [
         // Dependencies declare other packages that this package depends on.
@@ -29,7 +29,11 @@ let package = Package(
                 resources: [.process("Localizable.xcstrings")]),
         .target(name: "libHearts",
                 dependencies: ["libCommon"],
-                resources: [.copy("Resources"), .process("Localizable.xcstrings")]),
+                resources: [
+                    .copy("Resources/colors.json"),
+                    .copy("Resources/groups.json"),
+                    .process("Localizable.xcstrings")
+                ]),
         .executableTarget(name: "Hearts",
                           dependencies: [
                             "libHearts",
@@ -57,6 +61,3 @@ let package = Package(
     ],
     swiftLanguageModes: [.v6]
 )
-
-
-

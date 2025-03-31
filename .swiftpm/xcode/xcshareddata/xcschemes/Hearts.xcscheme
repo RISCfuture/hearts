@@ -85,7 +85,11 @@
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "/Users/tmorgan/Documents/Avatars/Headshot.jpeg"
+            argument = "-o hearts"
+            isEnabled = "YES">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "/System/Library/Desktop\ Pictures/Sonoma.heic"
             isEnabled = "YES">
          </CommandLineArgument>
       </CommandLineArguments>

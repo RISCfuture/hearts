@@ -1,30 +1,68 @@
-import Foundation
 @preconcurrency import CoreImage
+import Foundation
 import libCommon
 
+/// Generates "emoji-art" from strings.
 public actor EmojiArt {
-    public static let defaultCoherency: Float = 0.2
-    public var backgroundColor = Color.black
-    public func setBackgroundColor(_ color: Color) { backgroundColor = color }
 
+    /// Default color coherency: a measure of how similar the colors of the
+    /// individual pixels of an emoji must be for it to be used to represent a
+    /// colored pixel in the source image. Lower is stricter.
+    public static let defaultCoherency: Float = 0.2
+
+    /// The background color that the resulting emoji-art will be displayed
+    /// against (affects transparency).
+    public var backgroundColor = Color.black
+
+    /// The set of emoji characters to use.
     public let characters: Set<Character>
-    
+
+    /**
+     Creates an instance that uses emoji matching a certain color coherency.
+
+     - Parameter coherency: See ``defaultCoherency``.
+     */
     public init(coherency: Float = EmojiArt.defaultCoherency) async throws {
         try await self.init(characters: ColorData.shared.emojiWithCoherency(coherency))
     }
-    
+
+    /**
+     Creates an instance that uses emoji from a given set.
+
+     - Parameter characters: The set of emoji characters to use.
+     */
     public init(characters: Set<Character>) throws {
         self.characters = characters
     }
-    
+
+    /**
+     Creates an instance that uses emoji from a defined Unicode emoji group.
+
+     - Parameter group: The name of the emoji group.
+     */
     public init(group: String) async throws {
         try await self.init(characters: Groups.shared.characters(for: group))
     }
-    
-    public init(groups: Array<String>) async throws {
+
+    /**
+     Creates an instance that uses emoji from multiple Unicode emoji groups.
+
+     - Parameter groups: The names of the emoji groups.
+     */
+    public init(groups: [String]) async throws {
         try await self.init(characters: Groups.shared.characters(for: groups))
     }
-    
+
+    /// Sets the assumed background color of the output string.
+    public func setBackgroundColor(_ color: Color) { backgroundColor = color }
+
+    /**
+     Analyzes an image and returns emoji-art. Each pixel in the image will be
+     represented as an emoji character. (The image will not be scaled.)
+
+     - Parameter image: The image to process.
+     - Returns: The emoji-art string, with newlines.
+     */
     public func process(image: CIImage) async throws -> String {
         let chars = try await withThrowingTaskGroup(of: (Int, Character).self, returning: Array<Character>.self) { group in
             guard let cgImage = cgImage(from: image),
@@ -42,15 +80,15 @@ public actor EmojiArt {
             for try await pair in group { array[pair.0] = pair.1 }
             return array
         }
-        
+
         return chars
             .inGroupsOf(Int(image.extent.width))
             .map { String($0) }
             .joined(separator: "\n")
     }
-    
+
     private func closestEmoji(for color: Color) async -> Character? {
-        var min: Character? = nil, minDist: Float? = nil
+        var min: Character?, minDist: Float?
         for character in characters {
             let charColor = await ColorData.shared.for(character)!,
                 dist = distance2(charColor.mean, color)
@@ -68,15 +106,15 @@ public actor EmojiArt {
 
         return min
     }
-    
+
     private func distance2(_ a: Color, _ b: Color) -> Float {
         // https://en.wikipedia.org/wiki/Color_difference
-        
-        let rMean = (a.red + b.red)/2
+
+        let rMean = (a.red + b.red) / 2
         let delR2 = pow(a.red - b.red, 2),
             delG2 = pow(a.green - b.green, 2),
             delB2 = pow(a.blue - b.blue, 2)
-        
+
         let rFactor, gFactor, bFactor: Float
         if rMean < 0.5 {
             rFactor = 2
@@ -87,7 +125,7 @@ public actor EmojiArt {
             gFactor = 4
             bFactor = 2
         }
-        
-        return rFactor*delR2 + gFactor*delG2 + bFactor*delB2
+
+        return rFactor * delR2 + gFactor * delG2 + bFactor * delB2
     }
 }

@@ -26,7 +26,7 @@ extension Error: LocalizedError {
                 return String(localized: "Invalid background color", comment: "error")
         }
     }
-    
+
     var failureReason: String? {
         switch self {
             case .invalidFilePath:
@@ -38,16 +38,15 @@ extension Error: LocalizedError {
             case let .badResponse(response):
                 if let response = response as? HTTPURLResponse {
                     return String(localized: "Non-successful HTTP response code \(response.statusCode).", comment: "failure reason")
-                } else {
-                    return String(localized: "Response was not recognized as an HTTP response.", comment: "failure reason")
                 }
+                return String(localized: "Response was not recognized as an HTTP response.", comment: "failure reason")
             case .couldntScaleImage:
                 return String(localized: "The resize parameter may have been invalid.", comment: "failure reason")
             case .invalidBackgroundColor:
                 return String(localized: "Background colors must be specified as comma-delimited RGB floats (e.g., “0.5,0.0,1.0”)", comment: "failure reason")
         }
     }
-    
+
     var recoverySuggestion: String? {
         switch self {
             case .invalidFilePath:
