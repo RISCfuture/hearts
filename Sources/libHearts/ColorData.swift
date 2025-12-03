@@ -12,7 +12,6 @@ actor ColorData {
   private init() throws {
     var chars = [Character: EmojiColorData]()
 
-    // swiftlint:disable legacy_objc_type
     let data = try JSONSerialization.jsonObject(with: Data(contentsOf: dataURL)) as! [[Any]]
     for item in data {
       let str = item[0] as! String
@@ -22,7 +21,6 @@ actor ColorData {
       let sdr = item[4] as! NSNumber
       let sdg = item[5] as! NSNumber
       let sdb = item[6] as! NSNumber
-      // swiftlint:enable legacy_objc_type
 
       chars[str.first!] = try .init(
         mean: .init(red: r.floatValue, green: g.floatValue, blue: b.floatValue),

@@ -1,8 +1,34 @@
 import Foundation
 
+/// Errors that can occur when using the libHearts library.
+///
+/// These errors are thrown by ``EmojiArt`` during initialization or when
+/// processing images.
 public enum Error: Swift.Error {
+
+  /// No emoji characters are available for use.
+  ///
+  /// This error occurs when:
+  /// - The specified coherency threshold is too strict, filtering out all emoji
+  /// - An unrecognized emoji group name was provided
+  /// - An empty character set was provided
   case noCharacters
+
+  /// A non-emoji character was provided in the character set.
+  ///
+  /// When creating an ``EmojiArt`` instance with a custom character set,
+  /// all characters must be valid emoji. This error includes the offending
+  /// character.
+  ///
+  /// - Parameter char: The character that is not a valid emoji.
   case nonEmojiCharacter(_ char: Character)
+
+  /// The image could not be read or processed.
+  ///
+  /// This error occurs when:
+  /// - The image data is corrupt
+  /// - The image format is not supported by Core Image
+  /// - The image could not be converted to a processable format
   case badImage
 }
 

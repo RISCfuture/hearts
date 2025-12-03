@@ -1,6 +1,11 @@
 import Foundation
 
+/// Errors that can occur in libCommon operations.
 package enum Error: Swift.Error {
+  /// An invalid RGB color was specified.
+  ///
+  /// This error is thrown when creating a `Color` with components outside
+  /// the valid range of 0.0 to 1.0.
   case invalidColor
 }
 
