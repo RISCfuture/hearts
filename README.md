@@ -1,6 +1,9 @@
 Hearts
 ======
 
+[![CI](https://github.com/RISCfuture/hearts/actions/workflows/swift.yaml/badge.svg)](https://github.com/RISCfuture/hearts/actions/workflows/swift.yaml)
+[![Documentation](https://github.com/RISCfuture/hearts/actions/workflows/documentation.yaml/badge.svg)](https://riscfuture.github.io/hearts/)
+
 Generates images made of emoji characters ("emoji-art").
 
 Installation
