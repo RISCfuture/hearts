@@ -1,5 +1,5 @@
 {
-  "originHash" : "670676f53ff79f3291133c9dc0eb1950da35bc5763a9efc3aa2cd6d9bd0d4780",
+  "originHash" : "9d62acc4263f18c92aebae6a946ae1183588ed1ea4f10c066cab41e41f2c8fc0",
   "pins" : [
     {
       "identity" : "cwlcatchexception",
@@ -24,8 +24,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/Quick/Nimble.git",
       "state" : {
-        "revision" : "cc945f7bdf3b485adedc315e18685c065059b4ca",
-        "version" : "13.8.0"
+        "revision" : "035b88ad6ae8035f5ce2b50b0a6d69c3b16d2120",
+        "version" : "14.0.0"
       }
     },
     {
@@ -69,8 +69,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-docc-plugin",
       "state" : {
-        "revision" : "e977f65879f82b375a044c8837597f690c067da6",
-        "version" : "1.4.6"
+        "revision" : "647c708be89f834fa6a6d4945442793a77ddf5b6",
+        "version" : "1.5.0"
       }
     },
     {
