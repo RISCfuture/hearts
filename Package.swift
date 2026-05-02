@@ -23,7 +23,7 @@ let package = Package(
     ),
     .package(url: "https://github.com/jkandzi/Progress.swift.git", .upToNextMajor(from: "0.4.0")),
     .package(url: "https://github.com/Quick/Quick.git", from: "7.6.2"),
-    .package(url: "https://github.com/Quick/Nimble.git", from: "13.6.0"),
+    .package(url: "https://github.com/Quick/Nimble.git", from: "14.0.0"),
     .package(url: "https://github.com/apple/swift-docc-plugin", from: "1.4.0")
   ],
   targets: [
