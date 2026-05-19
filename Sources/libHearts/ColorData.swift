@@ -7,8 +7,6 @@ actor ColorData {
   private let dataURL = Bundle.module.url(forResource: "colors", withExtension: "json")!
   private let characters: [Character: EmojiColorData]
 
-  var allEmoji: Set<Character> { Set(characters.keys) }
-
   private init() throws {
     var chars = [Character: EmojiColorData]()
 
