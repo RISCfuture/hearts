@@ -132,8 +132,10 @@ package struct ColorAlpha {
 /// emoji-art generation process. All components must be within the valid
 /// range of 0.0 to 1.0.
 public struct Color: Codable, Sendable {
+  // swiftlint:disable force_try
   /// A constant representing black (0, 0, 0).
-  package static let black = try! Self(red: 0, green: 0, blue: 0)  // swiftlint:disable:this force_try
+  package static let black = try! Self(red: 0, green: 0, blue: 0)
+  // swiftlint:enable force_try
 
   /// The red component (0.0 to 1.0).
   public let red: Float
