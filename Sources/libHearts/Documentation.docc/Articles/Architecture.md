@@ -44,7 +44,7 @@ The `libCommon` module provides low-level utilities shared across the project:
 
 When processing an image:
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────────────┐
 │                           CIImage Input                             │
 └─────────────────────────────────────────────────────────────────────┘

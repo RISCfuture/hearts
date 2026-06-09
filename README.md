@@ -46,7 +46,7 @@ variety can be used, instead of just emoji with more generally uniform color.
 
 ### Options
 
-```
+```text
 USAGE: hearts [--width <width>] [--coherency <coherency>] [--only <only>]
     [--background <background>] [--glyph-count] <file>
 
