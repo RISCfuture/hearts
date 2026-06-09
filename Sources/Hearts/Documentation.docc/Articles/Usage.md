@@ -8,7 +8,7 @@ Hearts is a command-line tool that converts images into strings of emoji charact
 
 ## Synopsis
 
-```
+```text
 hearts [--width <width>] [--coherency <coherency>] [--only <only>]
        [--background <background>] [--glyph-count] <file>
 ```
@@ -73,6 +73,7 @@ swift run Hearts -w 80 --only "animals-nature,food-drink" image.png
 ```
 
 Available group names include:
+
 - `smileys-emotion`
 - `people-body`
 - `animals-nature`
@@ -153,15 +154,19 @@ swift run Hearts -w 80 --only flags flag.png
 The quality of the output depends heavily on how emoji are rendered on the viewing platform:
 
 ### Fixed-Width Rendering
+
 Emoji must be rendered as fixed-width characters. Not all platforms or font configurations do this correctly.
 
 ### Square Aspect Ratio
+
 Emoji should be rendered as squares. If line height differs from character width, the output will appear stretched.
 
 ### Platform Differences
+
 The color data is calculated from Apple's emoji font. Emoji on other platforms may have different colors, causing the output to look different.
 
 ### Complex Emoji Support
+
 Some newer emoji use Zero-Width Joiner (ZWJ) sequences. Platforms that don't support these will display the emoji "decomposed" (showing separate characters), breaking the fixed-width alignment.
 
 ## Output
