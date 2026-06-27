@@ -54,10 +54,10 @@ struct GenerateGroups: AsyncParsableCommand {
 
       if line.starts(with: "# group: ") {
         let group = String(line.suffix(from: line.index(line.startIndex, offsetBy: 9)))
-        groups.currentGroup = group
+        await groups.setCurrentGroup(group)
       } else if line.starts(with: "# subgroup: ") {
         let subgroup = String(line.suffix(from: line.index(line.startIndex, offsetBy: 12)))
-        groups.currentSubgroup = subgroup
+        await groups.setCurrentSubgroup(subgroup)
       } else if line.starts(with: "#") {
         continue
       } else {
@@ -147,20 +147,15 @@ actor Group {
   }
 }
 
-class Groups {
+actor Groups {
   private var groups: [Group] = []
-  private var groupsMutex = DispatchSemaphore(value: 1)
-
-  var currentGroup: String? {
-    willSet { groupsMutex.wait() }
-    didSet { groupsMutex.signal() }
-  }
-  var currentSubgroup: String? {
-    willSet { groupsMutex.wait() }
-    didSet { groupsMutex.signal() }
-  }
+  private var currentGroup: String?
+  private var currentSubgroup: String?
 
   private let allowedNameChars = CharacterSet.alphanumerics.union(CharacterSet.newlines)
+
+  func setCurrentGroup(_ name: String) { currentGroup = name }
+  func setCurrentSubgroup(_ name: String) { currentSubgroup = name }
 
   func addChar(_ char: Character) async throws {
     guard let currentGroup,
