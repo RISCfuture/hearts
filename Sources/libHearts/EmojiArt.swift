@@ -1,4 +1,4 @@
-@preconcurrency import CoreImage
+import CoreImage
 import Foundation
 import libCommon
 

@@ -3,6 +3,11 @@
 
 import PackageDescription
 
+let approachableConcurrency: [SwiftSetting] = [
+  .enableUpcomingFeature("NonisolatedNonsendingByDefault"),
+  .enableUpcomingFeature("InferIsolatedConformances")
+]
+
 let package = Package(
   name: "Hearts",
   defaultLocalization: "en",
@@ -31,7 +36,8 @@ let package = Package(
     // Targets can depend on other targets in this package, and on products in packages this package depends on.
     .target(
       name: "libCommon",
-      resources: [.process("Localizable.xcstrings")]
+      resources: [.process("Localizable.xcstrings")],
+      swiftSettings: approachableConcurrency
     ),
     .target(
       name: "libHearts",
@@ -40,7 +46,8 @@ let package = Package(
         .copy("Resources/colors.json"),
         .copy("Resources/groups.json"),
         .process("Localizable.xcstrings")
-      ]
+      ],
+      swiftSettings: approachableConcurrency
     ),
     .executableTarget(
       name: "Hearts",
@@ -48,12 +55,14 @@ let package = Package(
         "libHearts",
         .product(name: "ArgumentParser", package: "swift-argument-parser")
       ],
-      resources: [.process("Localizable.xcstrings")]
+      resources: [.process("Localizable.xcstrings")],
+      swiftSettings: approachableConcurrency
     ),
     .testTarget(
       name: "HeartsTests",
       dependencies: ["libHearts", "Nimble", "Quick"],
-      resources: [.process("Resources")]
+      resources: [.process("Resources")],
+      swiftSettings: approachableConcurrency
     ),
     .executableTarget(
       name: "GenerateColors",
@@ -62,19 +71,22 @@ let package = Package(
         .product(name: "ArgumentParser", package: "swift-argument-parser"),
         .product(name: "Progress", package: "Progress.swift")
       ],
-      resources: [.process("Resources")]
+      resources: [.process("Resources")],
+      swiftSettings: approachableConcurrency
     ),
     .executableTarget(
       name: "GenerateGroups",
       dependencies: [
         .product(name: "ArgumentParser", package: "swift-argument-parser")
-      ]
+      ],
+      swiftSettings: approachableConcurrency
     ),
     .executableTarget(
       name: "GenerateCharacters",
       dependencies: [
         .product(name: "ArgumentParser", package: "swift-argument-parser")
-      ]
+      ],
+      swiftSettings: approachableConcurrency
     )
   ],
   swiftLanguageModes: [.v6]

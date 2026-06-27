@@ -44,53 +44,48 @@ struct GenerateColors: AsyncParsableCommand {
     try data.write(to: output)
   }
 
-  private func characterToImage(_ character: Character, extent: Int = 216) async throws -> CGImage {
-    return try await withCheckedThrowingContinuation { continuation in
-      guard let colorspace = CGColorSpace(name: CGColorSpace.sRGB) else {
-        continuation.resume(with: .failure(Error.drawingError))
-        return
-      }
-      guard
-        let context = CGContext(
-          data: nil,
-          width: extent,
-          height: extent,
-          bitsPerComponent: 8,
-          bytesPerRow: 0,
-          space: colorspace,
-          bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue
-        )
-      else {
-        continuation.resume(with: .failure(Error.drawingError))
-        return
-      }
-
-      let path = CGPath(rect: CGRect(x: 0, y: 0, width: extent, height: extent), transform: nil)
-      let font = CTFont(.system, size: CGFloat(Double(extent) * 0.75))
-      let attributes = [
-        kCTFontAttributeName: font
-      ]
-      let cfString = String(character) as CFString
-      let attrString = CFAttributedStringCreate(nil, cfString, attributes as CFDictionary)!
-
-      let framesetter = CTFramesetterCreateWithAttributedString(attrString)
-      let frame = CTFramesetterCreateFrame(
-        framesetter,
-        CFRange(location: 0, length: CFStringGetLength(cfString)),
-        path,
-        nil
-      )
-      CTFrameDraw(frame, context)
-
-      context.flush()
-
-      guard let image = context.makeImage() else {
-        continuation.resume(with: .failure(Error.drawingError))
-        return
-      }
-
-      continuation.resume(with: .success(image))
+  private func characterToImage(_ character: Character, extent: Int = 216) throws -> CGImage {
+    guard let colorspace = CGColorSpace(name: CGColorSpace.sRGB) else {
+      throw Error.drawingError
     }
+    guard
+      let context = CGContext(
+        data: nil,
+        width: extent,
+        height: extent,
+        bitsPerComponent: 8,
+        bytesPerRow: 0,
+        space: colorspace,
+        bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue
+      )
+    else {
+      throw Error.drawingError
+    }
+
+    let path = CGPath(rect: CGRect(x: 0, y: 0, width: extent, height: extent), transform: nil)
+    let font = CTFont(.system, size: CGFloat(Double(extent) * 0.75))
+    let attributes = [
+      kCTFontAttributeName: font
+    ]
+    let cfString = String(character) as CFString
+    let attrString = CFAttributedStringCreate(nil, cfString, attributes as CFDictionary)!
+
+    let framesetter = CTFramesetterCreateWithAttributedString(attrString)
+    let frame = CTFramesetterCreateFrame(
+      framesetter,
+      CFRange(location: 0, length: CFStringGetLength(cfString)),
+      path,
+      nil
+    )
+    CTFrameDraw(frame, context)
+
+    context.flush()
+
+    guard let image = context.makeImage() else {
+      throw Error.drawingError
+    }
+
+    return image
   }
 
   private func characterImages() async throws -> [(Character, CGImage)] {
@@ -100,7 +95,7 @@ struct GenerateColors: AsyncParsableCommand {
 
       for character in try characters {
         group.addTask {
-          let image = try await characterToImage(character)
+          let image = try characterToImage(character)
           await ProgressWrapper.shared.next()
           return (character, image)
         }
