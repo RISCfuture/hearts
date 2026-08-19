@@ -12,10 +12,6 @@ libCommon provides shared functionality used by both the Hearts command-line too
 
 ## Topics
 
-### Image Processing
+### Colors
 
-- ``CGImage/pixels``
-
-### Error Handling
-
-- ``Errors``
+- ``Color``
