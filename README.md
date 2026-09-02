@@ -44,6 +44,14 @@ variety can be used, instead of just emoji with more generally uniform color.
 
 ![Output preview](https://i.imgur.com/DgkAGRB.png)
 
+``` sh
+swift run Hearts movie.mp4
+```
+
+Plays a video as emoji-art in the terminal, sized to fit and paced to the
+video's frame rate (frames are dropped rather than slowing playback). Press
+Control-C to stop.
+
 ### Options
 
 ```text
@@ -51,10 +59,12 @@ USAGE: hearts [--width <width>] [--coherency <coherency>] [--only <only>]
     [--background <background>] [--glyph-count] <file>
 
 ARGUMENTS:
-  <file>                  The image file or URL to process
+  <file>                  The image file or URL, or local video file, to
+                          process
 
 OPTIONS:
-  -w, --width <width>     Resize image to the given width (in pixels)
+  -w, --width <width>     Resize the image or video to the given width (in
+                          pixels)
   -c, --coherency <coherency>
                           Amount of monochrome required for an emoji to be used
                           (lower is stricter)

@@ -39,7 +39,7 @@ guard let image = CIImage(contentsOf: imageURL) else {
 }
 
 // Create the emoji-art generator with default settings
-let emojiArt = try await EmojiArt()
+let emojiArt = try EmojiArt()
 
 // Process the image
 let result = try await emojiArt.process(image: image)
@@ -70,6 +70,17 @@ func resize(image: CIImage, width: Double) -> CIImage {
 
 let scaledImage = resize(image: originalImage, width: 60)
 let result = try await emojiArt.process(image: scaledImage)
+```
+
+## Playing Video
+
+``EmojiArt/frames(of:width:clock:)`` decodes a local video file and yields one ``EmojiFrame`` per frame, paced to the video's presentation times. Frames are decoded at the requested width, so no scaling step is needed, and frames that fall behind real time are skipped:
+
+```swift
+let video = try await VideoInfo.load(url: videoURL)
+for try await frame in emojiArt.frames(of: video, width: 80) {
+    print("\u{1B}[H" + frame.string)  // redraw from the top-left corner
+}
 ```
 
 ## Next Steps

@@ -14,13 +14,13 @@ import libCommon
 ///
 /// ```swift
 /// // Default: uses emoji with uniform colors
-/// let emojiArt = try await EmojiArt()
+/// let emojiArt = try EmojiArt()
 ///
 /// // Stricter coherency for cleaner output
-/// let strict = try await EmojiArt(coherency: 0.1)
+/// let strict = try EmojiArt(coherency: 0.1)
 ///
 /// // Use emoji from a specific Unicode group
-/// let flags = try await EmojiArt(group: "flags")
+/// let flags = try EmojiArt(group: "flags")
 ///
 /// // Use a custom set of emoji
 /// let hearts = try EmojiArt(characters: Set("❤️🧡💛💚💙💜"))
@@ -38,6 +38,10 @@ import libCommon
 /// > Important: The image is not automatically scaled. Each pixel becomes one
 /// > emoji character, so scale your image to the desired width first.
 public actor EmojiArt {
+
+  /// The sequence returned by ``frames(of:width:clock:)``.
+  public typealias Frames<C: Clock<Duration>> =
+    RealtimeSequence<AsyncThrowingMapSequence<VideoFrames, EmojiFrame>, C>
 
   /// The default color coherency threshold.
   ///
@@ -66,6 +70,8 @@ public actor EmojiArt {
   /// emoji used depend on the colors in your source image.
   public let characters: Set<Character>
 
+  private let palette: Palette
+
   /// Creates an instance that uses emoji filtered by color coherency.
   ///
   /// Emoji with coherency below the threshold are excluded. This filters out
@@ -76,8 +82,8 @@ public actor EmojiArt {
   ///   Lower values are stricter. Defaults to ``defaultCoherency``.
   ///
   /// - Throws: ``Error/noCharacters`` if no emoji meet the coherency threshold.
-  public init(coherency: Float = EmojiArt.defaultCoherency) async throws {
-    try await self.init(characters: ColorData.shared.emojiWithCoherency(coherency))
+  public init(coherency: Float = EmojiArt.defaultCoherency) throws {
+    try self.init(characters: ColorData.shared.emojiWithCoherency(coherency))
   }
 
   /// Creates an instance that uses a specific set of emoji characters.
@@ -95,6 +101,7 @@ public actor EmojiArt {
   ///   ``Error/nonEmojiCharacter(_:)`` if any character is not a valid emoji.
   public init(characters: Set<Character>) throws {
     self.characters = characters
+    palette = try Palette(characters: characters)
   }
 
   /// Creates an instance that uses emoji from a Unicode emoji group.
@@ -103,15 +110,15 @@ public actor EmojiArt {
   /// "animals-nature". This initializer loads all emoji from the specified group.
   ///
   /// ```swift
-  /// let flags = try await EmojiArt(group: "flags")
+  /// let flags = try EmojiArt(group: "flags")
   /// ```
   ///
   /// - Parameter group: The name of the emoji group, using lowercase with
   ///   hyphens (e.g., "food-drink", "animals-nature").
   ///
   /// - Throws: ``Error/noCharacters`` if the group name is not recognized.
-  public init(group: String) async throws {
-    try await self.init(characters: Groups.shared.characters(for: group))
+  public init(group: String) throws {
+    try self.init(characters: Groups.shared.characters(for: group))
   }
 
   /// Creates an instance that uses emoji from multiple Unicode emoji groups.
@@ -119,14 +126,19 @@ public actor EmojiArt {
   /// Combines emoji from all specified groups into a single available set.
   ///
   /// ```swift
-  /// let nature = try await EmojiArt(groups: ["animals-nature", "travel-places"])
+  /// let nature = try EmojiArt(groups: ["animals-nature", "travel-places"])
   /// ```
   ///
   /// - Parameter groups: An array of emoji group names.
   ///
   /// - Throws: ``Error/noCharacters`` if no groups are recognized.
-  public init(groups: [String]) async throws {
-    try await self.init(characters: Groups.shared.characters(for: groups))
+  public init(groups: [String]) throws {
+    try self.init(characters: Groups.shared.characters(for: groups))
+  }
+
+  private static func rowsPerBand(rowCount: Int) -> Int {
+    let bandCount = ProcessInfo.processInfo.activeProcessorCount
+    return max(1, Int((Double(rowCount) / Double(bandCount)).rounded(.up)))
   }
 
   /// Sets the background color for transparency blending.
@@ -159,81 +171,84 @@ public actor EmojiArt {
   ///
   /// - Throws: ``Error/badImage`` if the image cannot be processed.
   public func process(image: CIImage) async throws -> String {
-    let chars = try await withThrowingTaskGroup(
-      of: (Int, Character).self,
-      returning: Array<Character>.self
+    guard let cgImage = cgImage(from: image), cgImage.width > 0, let pixels = cgImagePixels(cgImage)
+    else { throw Error.badImage }
+
+    let rows = Array(pixels).chunks(of: cgImage.width)
+    let bands = rows.chunks(of: Self.rowsPerBand(rowCount: rows.count))
+    let background = backgroundColor
+    let palette = palette
+
+    let renderedBands = try await withThrowingTaskGroup(
+      of: (Int, String).self,
+      returning: [String].self
     ) { group in
-      guard let cgImage = cgImage(from: image),
-        let pixels = cgImagePixels(cgImage)
-      else { throw Error.badImage }
-
-      var array = Array(
-        repeating: Character("."),
-        count: Int(image.extent.width * image.extent.height)
-      )
-
-      for (n, pixel) in pixels.enumerated() {
-        group.addTask {
-          let char =
-            await self.closestEmoji(for: try pixel.premultiply(background: self.backgroundColor))
-            ?? " "
-          return (n, char)
-        }
+      for (index, band) in bands.enumerated() {
+        group.addTask { (index, try palette.render(band, background: background)) }
       }
 
-      for try await pair in group { array[pair.0] = pair.1 }
+      var array = Array(repeating: "", count: bands.count)
+      for try await (index, band) in group { array[index] = band }
       return array
     }
 
-    return
-      chars
-      .inGroupsOf(Int(image.extent.width))
-      .map { String($0) }
-      .joined(separator: "\n")
+    return renderedBands.joined(separator: "\n")
   }
 
-  private func closestEmoji(for color: Color) async -> Character? {
-    var min: Character?
-    var minDist: Float?
-    for character in characters {
-      let charColor = await ColorData.shared.for(character)!
-      let dist = distance2(charColor.mean, color)
-
-      guard min != nil, minDist != nil else {
-        min = character
-        minDist = dist
-        continue
+  /// Plays a video as a sequence of emoji-art frames in real time.
+  ///
+  /// Each frame is decoded at `width` pixels wide (height follows the video's
+  /// aspect ratio), converted with ``process(image:)``, and then delivered at
+  /// its presentation time. A frame whose time has already passed by the time
+  /// it is rendered is skipped, so playback finishes when the video would,
+  /// regardless of rendering speed.
+  ///
+  /// ```swift
+  /// let video = try await VideoInfo.load(url: url)
+  /// for try await frame in emojiArt.frames(of: video, width: 80) {
+  ///   print(frame.string)
+  /// }
+  /// ```
+  ///
+  /// Frames are decoded only as they are requested, so cancelling the consuming
+  /// task, or ending iteration early, stops decoding.
+  ///
+  /// - Parameters:
+  ///   - video: A local video file.
+  ///   - width: The output width in emoji.
+  ///   - clock: The clock that paces playback. Defaults to the continuous clock.
+  ///
+  /// - Returns: A sequence of rendered frames, one per displayed frame.
+  ///
+  /// - Throws: ``Error/badVideo`` if the video cannot be read.
+  nonisolated public func frames<C: Clock<Duration>>(
+    of video: VideoInfo,
+    width: UInt,
+    clock: C = ContinuousClock()
+  ) -> Frames<C> {
+    VideoFrames(video: video, size: video.frameSize(width: width))
+      .map {
+        EmojiFrame(
+          presentationTime: $0.presentationTime,
+          string: try await self.process(image: $0.image)
+        )
       }
-      if dist < minDist! {
-        min = character
-        minDist = dist
-      }
-    }
-
-    return min
+      .pacedToRealtime(clock: clock)
   }
+}
 
-  private func distance2(_ a: Color, _ b: Color) -> Float {
-    // https://en.wikipedia.org/wiki/Color_difference
+/// One frame of a video rendered as emoji-art.
+public struct EmojiFrame: TimedFrame, Sendable {
 
-    let rMean = (a.red + b.red) / 2
-    let delR2 = pow(a.red - b.red, 2)
-    let delG2 = pow(a.green - b.green, 2)
-    let delB2 = pow(a.blue - b.blue, 2)
+  /// When this frame is due, measured from the start of the video.
+  public let presentationTime: Duration
 
-    let rFactor: Float
-    let gFactor: Float
-    let bFactor: Float
-    if rMean < 0.5 {
-      rFactor = 2
-      gFactor = 4
-      bFactor = 3
-    } else {
-      rFactor = 3
-      gFactor = 4
-      bFactor = 2
-    }
+  /// The rendered frame, with newline characters separating each row.
+  public let string: String
+}
 
-    return rFactor * delR2 + gFactor * delG2 + bFactor * delB2
+extension RandomAccessCollection where Index == Int {
+  fileprivate func chunks(of size: Int) -> [SubSequence] {
+    stride(from: startIndex, to: endIndex, by: size).map { self[$0...].prefix(size) }
   }
 }

@@ -1,14 +1,17 @@
 import ArgumentParser
 import CoreImage
 import Foundation
+import UniformTypeIdentifiers
 import libCommon
 import libHearts
 
 @main
 struct Hearts: AsyncParsableCommand {
+  private static let terminationSignals = [SIGINT, SIGTERM, SIGHUP]
+
   @Option(
     name: .shortAndLong,
-    help: "Resize image to the given width (in pixels)"
+    help: "Resize the image or video to the given width (in pixels)"
   )
   var width: UInt?
 
@@ -48,8 +51,12 @@ struct Hearts: AsyncParsableCommand {
   )
   var glyphCount = false
 
-  @Argument(help: "The image file or URL to process")
+  @Argument(help: "The image file or URL, or local video file, to process")
   var file: String
+
+  private static func isVideo(_ url: URL) -> Bool {
+    UTType(filenameExtension: url.pathExtension)?.conforms(to: .movie) ?? false
+  }
 
   mutating func run() async throws {
     let emojiArt: EmojiArt
@@ -57,11 +64,11 @@ struct Hearts: AsyncParsableCommand {
     if let characters = parseOnlyCharacters() {
       emojiArt = try EmojiArt(characters: characters)
     } else if let groups = parseOnlyGroups() {
-      emojiArt = try await EmojiArt(groups: groups)
+      emojiArt = try EmojiArt(groups: groups)
     } else if let coherency {
-      emojiArt = try await EmojiArt(coherency: coherency)
+      emojiArt = try EmojiArt(coherency: coherency)
     } else {
-      emojiArt = try await EmojiArt()
+      emojiArt = try EmojiArt()
     }
     await emojiArt.setBackgroundColor(background)
 
@@ -71,14 +78,43 @@ struct Hearts: AsyncParsableCommand {
     }
 
     let url = try toURL(path: file)
-    var image = try await loadImage(url: url)
+    if Self.isVideo(url) {
+      try await play(url: url, using: emojiArt)
+    } else {
+      try await render(url: url, using: emojiArt)
+    }
+  }
 
+  private func render(url: URL, using emojiArt: EmojiArt) async throws {
+    var image = try await loadImage(url: url)
     if let width {
       image = try resize(image: image, width: Double(width))
     }
+    print(try await emojiArt.process(image: image))
+  }
 
-    let result = try await emojiArt.process(image: image)
-    print(result)
+  private func play(url: URL, using emojiArt: EmojiArt) async throws {
+    guard url.isFileURL else { throw Error.remoteVideo(file) }
+    let video = try await VideoInfo.load(url: url)
+    let terminal = Terminal()
+    let width = width ?? terminal.fittedWidth(aspectRatio: video.aspectRatio)
+
+    let cancellation = SignalCancellation(signals: Self.terminationSignals)
+    defer { cancellation.invalidate() }
+    try terminal.enterPlayback()
+    defer { terminal.exitPlayback() }
+
+    let playback = Task {
+      for try await frame in emojiArt.frames(of: video, width: width) {
+        try terminal.show(frame.string)
+      }
+    }
+    cancellation.attach(playback)
+
+    do {
+      try await playback.value
+    } catch is CancellationError {}
+    if let exitCode = cancellation.exitCode { throw exitCode }
   }
 
   private func toURL(path _: String) throws -> URL {

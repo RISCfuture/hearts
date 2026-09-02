@@ -30,6 +30,14 @@ public enum Error: Swift.Error {
   /// - The image format is not supported by Core Image
   /// - The image could not be converted to a processable format
   case badImage
+
+  /// The video could not be read or decoded.
+  ///
+  /// This error occurs when:
+  /// - The file has no video track
+  /// - The video codec is not supported by AVFoundation
+  /// - Decoding fails partway through the file
+  case badVideo
 }
 
 extension Error: LocalizedError {
@@ -41,6 +49,8 @@ extension Error: LocalizedError {
         return String(localized: "Not an emoji character: \(String(char))", comment: "error")
       case .badImage:
         return String(localized: "Image could not be read", comment: "error")
+      case .badVideo:
+        return String(localized: "Video could not be read", comment: "error")
     }
   }
 
@@ -61,6 +71,11 @@ extension Error: LocalizedError {
           localized: "The image is corrupt or not in a supported format.",
           comment: "failure reason"
         )
+      case .badVideo:
+        return String(
+          localized: "The file has no video track, or the video could not be decoded.",
+          comment: "failure reason"
+        )
     }
   }
 
@@ -79,6 +94,11 @@ extension Error: LocalizedError {
       case .badImage:
         return String(
           localized: "Try converting the image to a supported format first.",
+          comment: "recovery suggestion"
+        )
+      case .badVideo:
+        return String(
+          localized: "Try converting the video to an H.264 MP4 file first.",
           comment: "recovery suggestion"
         )
     }

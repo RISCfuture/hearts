@@ -14,10 +14,10 @@ The ``EmojiArt/defaultCoherency`` value of `0.2` provides a good balance. Lower 
 
 ```swift
 // Strict: Only very uniform emoji
-let strict = try await EmojiArt(coherency: 0.1)
+let strict = try EmojiArt(coherency: 0.1)
 
 // Permissive: Include more varied emoji
-let permissive = try await EmojiArt(coherency: 0.5)
+let permissive = try EmojiArt(coherency: 0.5)
 ```
 
 ## Unicode Emoji Groups
@@ -26,13 +26,13 @@ You can select emoji by their Unicode classification. This is useful for themati
 
 ```swift
 // Use flag emoji for patriotic images
-let flags = try await EmojiArt(group: "flags")
+let flags = try EmojiArt(group: "flags")
 
 // Use food emoji
-let food = try await EmojiArt(group: "food-drink")
+let food = try EmojiArt(group: "food-drink")
 
 // Combine multiple groups
-let nature = try await EmojiArt(groups: ["animals-nature", "travel-places"])
+let nature = try EmojiArt(groups: ["animals-nature", "travel-places"])
 ```
 
 ### Available Groups
@@ -40,7 +40,7 @@ let nature = try await EmojiArt(groups: ["animals-nature", "travel-places"])
 The available groups correspond to the Unicode emoji specification groups and subgroups. Common groups include:
 
 | Group | Description |
-|-------|-------------|
+| ------- | ------------- |
 | `smileys-emotion` | Faces and emotional emoji |
 | `people-body` | People, gestures, and body parts |
 | `animals-nature` | Animals, plants, and nature |
@@ -75,7 +75,7 @@ let ocean = try EmojiArt(characters: Set("🌊💙🐟🐠🦈"))
 When your source image has transparency, set the background color to match where the output will be displayed:
 
 ```swift
-let emojiArt = try await EmojiArt()
+let emojiArt = try EmojiArt()
 
 // For display on a white background
 await emojiArt.setBackgroundColor(Color(red: 1, green: 1, blue: 1))

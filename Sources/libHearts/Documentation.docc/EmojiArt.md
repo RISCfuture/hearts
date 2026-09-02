@@ -11,7 +11,7 @@ The main actor for generating emoji-art from images.
 Create an instance with default settings and process an image:
 
 ```swift
-let emojiArt = try await EmojiArt()
+let emojiArt = try EmojiArt()
 let result = try await emojiArt.process(image: myCIImage)
 ```
 
@@ -21,13 +21,24 @@ You can control which emoji are used in several ways:
 
 ```swift
 // Use only emoji with highly uniform colors
-let strict = try await EmojiArt(coherency: 0.1)
+let strict = try EmojiArt(coherency: 0.1)
 
 // Use emoji from a specific Unicode group
-let flags = try await EmojiArt(group: "flags")
+let flags = try EmojiArt(group: "flags")
 
 // Use a custom set of emoji
 let hearts = try EmojiArt(characters: Set("❤️🧡💛💚💙💜"))
+```
+
+### Playing Video
+
+Stream a video file as emoji-art frames delivered at their presentation times:
+
+```swift
+let video = try await VideoInfo.load(url: videoURL)
+for try await frame in emojiArt.frames(of: video, width: 80) {
+    print(frame.string)
+}
 ```
 
 ### Background Color
@@ -35,7 +46,7 @@ let hearts = try EmojiArt(characters: Set("❤️🧡💛💚💙💜"))
 When processing images with transparency, set the background color to match where the output will be displayed:
 
 ```swift
-let emojiArt = try await EmojiArt()
+let emojiArt = try EmojiArt()
 await emojiArt.setBackgroundColor(Color(red: 1, green: 1, blue: 1)) // White background
 ```
 
@@ -56,6 +67,11 @@ await emojiArt.setBackgroundColor(Color(red: 1, green: 1, blue: 1)) // White bac
 ### Processing Images
 
 - ``process(image:)``
+
+### Video Playback
+
+- ``frames(of:width:clock:)``
+- ``Frames``
 
 ### Configuration Constants
 

@@ -7,6 +7,7 @@ enum Error: Swift.Error {
   case badResponse(_ response: URLResponse)
   case couldntScaleImage
   case invalidBackgroundColor
+  case remoteVideo(_ url: String)
 }
 
 extension Error: LocalizedError {
@@ -24,6 +25,8 @@ extension Error: LocalizedError {
         return String(localized: "Couldn’t resize image", comment: "error")
       case .invalidBackgroundColor:
         return String(localized: "Invalid background color", comment: "error")
+      case .remoteVideo:
+        return String(localized: "Video must be a local file", comment: "error")
     }
   }
 
@@ -60,6 +63,11 @@ extension Error: LocalizedError {
             "Background colors must be specified as comma-delimited RGB floats (e.g., “0.5,0.0,1.0”)",
           comment: "failure reason"
         )
+      case .remoteVideo(let url):
+        return String(
+          localized: "Videos can only be played from local files, not from \(url).",
+          comment: "failure reason"
+        )
     }
   }
 
@@ -93,6 +101,11 @@ extension Error: LocalizedError {
       case .invalidBackgroundColor:
         return String(
           localized: "Check the formatting of your background color",
+          comment: "recovery suggestion"
+        )
+      case .remoteVideo:
+        return String(
+          localized: "Download the video first, then pass its file path.",
           comment: "recovery suggestion"
         )
     }

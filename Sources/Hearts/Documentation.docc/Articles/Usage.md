@@ -4,7 +4,7 @@ Generate emoji-art from images using the Hearts command.
 
 ## Overview
 
-Hearts is a command-line tool that converts images into strings of emoji characters. Each pixel in the source image is replaced with an emoji whose color best matches that pixel.
+Hearts is a command-line tool that converts images into strings of emoji characters. Each pixel in the source image is replaced with an emoji whose color best matches that pixel. Given a video file instead, Hearts plays it in the terminal as emoji frames.
 
 ## Synopsis
 
@@ -27,6 +27,8 @@ swift run Hearts /path/to/image.png
 swift run Hearts https://example.com/image.jpg
 ```
 
+A local file with a video extension (`.mp4`, `.mov`, `.m4v`, and so on) is played rather than converted. See <doc:Usage#Playing-Video>.
+
 ## Options
 
 ### --width, -w
@@ -38,7 +40,7 @@ Resize the image to the specified width in pixels before processing. Since each 
 swift run Hearts -w 80 image.png
 ```
 
-If not specified, the image is processed at its original resolution.
+If not specified, an image is processed at its original resolution, and a video is sized to fit the terminal.
 
 ### --coherency, -c
 
@@ -148,6 +150,26 @@ Use flag emoji for patriotic images:
 ```bash
 swift run Hearts -w 80 --only flags flag.png
 ```
+
+## Playing Video
+
+Pass a local video file and Hearts plays it as emoji-art in the terminal:
+
+```bash
+swift run Hearts movie.mp4
+```
+
+Playback runs on the alternate screen at the video's own pace. Each frame is decoded, converted to emoji, and shown at its presentation time. When conversion cannot keep up with the frame rate, frames are skipped so playback still finishes when the video would. There is no audio.
+
+The frame size is chosen to fit the terminal, allowing two columns per emoji. Use `--width` to pick a width yourself:
+
+```bash
+swift run Hearts -w 40 movie.mp4
+```
+
+Press Control-C to stop. The terminal is restored either way, and the shell's scrollback is untouched.
+
+> Note: Videos must be local files. URLs are only supported for images.
 
 ## Display Considerations
 

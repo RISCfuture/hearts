@@ -7,9 +7,10 @@ import Foundation
 /// - Parameter ciImage: The CIImage to convert.
 /// - Returns: A CGImage representation, or `nil` if conversion fails.
 package func cgImage(from ciImage: CIImage) -> CGImage? {
-  let context = CIContext()
-  return context.createCGImage(ciImage, from: ciImage.extent)
+  sharedContext.createCGImage(ciImage, from: ciImage.extent)
 }
+
+private let sharedContext = CIContext()
 
 /// Extracts pixel data from a CGImage as a sequence of colors.
 ///
@@ -44,7 +45,7 @@ package func cgImagePixels(_ image: CGImage) -> PixelSequence? {
 ///
 /// Each element is a `ColorAlpha` representing the RGBA values of a single pixel.
 /// Pixels are returned in row-major order (left to right, top to bottom).
-package struct PixelSequence: Sequence {
+package struct PixelSequence: Sequence, Sendable {
   package typealias Element = ColorAlpha
 
   private let data: Data
@@ -95,7 +96,7 @@ package struct PixelSequence: Sequence {
 /// An RGBA color with alpha channel.
 ///
 /// All components are in the range 0.0 to 1.0.
-package struct ColorAlpha {
+package struct ColorAlpha: Sendable {
   /// The red component (0.0 to 1.0).
   package let red: Float
 
@@ -131,7 +132,7 @@ package struct ColorAlpha {
 /// `Color` represents an opaque RGB color used for color matching in the
 /// emoji-art generation process. All components must be within the valid
 /// range of 0.0 to 1.0.
-public struct Color: Codable, Sendable {
+public struct Color: Codable, Hashable, Sendable {
   // swiftlint:disable force_try
   /// A constant representing black (0, 0, 0).
   package static let black = try! Self(red: 0, green: 0, blue: 0)

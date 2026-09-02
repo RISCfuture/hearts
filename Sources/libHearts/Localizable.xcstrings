@@ -19,11 +19,20 @@
     "One of the characters you supplied is not an emoji." : {
       "comment" : "failure reason"
     },
+    "The file has no video track, or the video could not be decoded." : {
+      "comment" : "failure reason"
+    },
     "The image is corrupt or not in a supported format." : {
       "comment" : "failure reason"
     },
     "Try converting the image to a supported format first." : {
       "comment" : "recovery suggestion"
+    },
+    "Try converting the video to an H.264 MP4 file first." : {
+      "comment" : "recovery suggestion"
+    },
+    "Video could not be read" : {
+      "comment" : "error"
     },
     "You may have specified an invalid group name or non-emoji characters." : {
       "comment" : "failure reason"

@@ -1,17 +1,16 @@
 import Foundation
 import libCommon
 
-actor ColorData {
-  static let shared = try! ColorData()  // swiftlint:disable:this force_try
+struct ColorData: Sendable {
+  static let shared = try! Self()  // swiftlint:disable:this force_try
 
-  private let dataURL = Bundle.module.url(forResource: "colors", withExtension: "json")!
   private let characters: [Character: EmojiColorData]
 
   private init() throws {
-    var chars = [Character: EmojiColorData]()
-
+    let dataURL = Bundle.module.url(forResource: "colors", withExtension: "json")!
     let data = try JSONSerialization.jsonObject(with: Data(contentsOf: dataURL)) as! [[Any]]
-    for item in data {
+
+    characters = try data.reduce(into: [:]) { chars, item in
       let str = item[0] as! String
       let r = item[1] as! NSNumber
       let g = item[2] as! NSNumber
@@ -25,8 +24,6 @@ actor ColorData {
         standardDeviation: .init(red: sdr.floatValue, green: sdg.floatValue, blue: sdb.floatValue)
       )
     }
-
-    self.characters = chars
   }
 
   func `for`(_ character: Character) -> EmojiColorData? {
@@ -41,7 +38,7 @@ actor ColorData {
     }
   }
 
-  struct EmojiColorData {
+  struct EmojiColorData: Sendable {
     let mean: Color
     let standardDeviation: Color
 

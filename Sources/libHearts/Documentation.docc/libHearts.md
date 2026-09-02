@@ -9,9 +9,18 @@ libHearts transforms images into emoji-art by analyzing each pixel and finding t
 ```swift
 import libHearts
 
-let emojiArt = try await EmojiArt()
+let emojiArt = try EmojiArt()
 let result = try await emojiArt.process(image: myImage)
 print(result)
+```
+
+Video files can be played as a real-time stream of emoji-art frames:
+
+```swift
+let video = try await VideoInfo.load(url: videoURL)
+for try await frame in emojiArt.frames(of: video, width: 80) {
+    print(frame.string)
+}
 ```
 
 The library supports multiple ways to select which emoji to use:
@@ -30,6 +39,15 @@ The library supports multiple ways to select which emoji to use:
 ### Selecting Emoji
 
 - <doc:ChoosingEmoji>
+
+### Playing Video
+
+- ``VideoFrames``
+- ``VideoFrame``
+- ``EmojiFrame``
+- ``VideoInfo``
+- ``RealtimeSequence``
+- ``TimedFrame``
 
 ### Understanding the Library
 

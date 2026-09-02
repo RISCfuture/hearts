@@ -7,10 +7,10 @@
     "Bad response from net request" : {
       "comment" : "error"
     },
-    "Check the formatting of your background color" : {
+    "Check the URL to make sure it is working properly." : {
       "comment" : "recovery suggestion"
     },
-    "Check the URL to make sure it is working properly." : {
+    "Check the formatting of your background color" : {
       "comment" : "recovery suggestion"
     },
     "Core Image couldn’t parse the image file." : {
@@ -22,10 +22,13 @@
     "Couldn’t resize image" : {
       "comment" : "error"
     },
-    "Invalid background color" : {
-      "comment" : "error"
+    "Download the video first, then pass its file path." : {
+      "comment" : "recovery suggestion"
     },
     "Invalid URL: %@" : {
+      "comment" : "error"
+    },
+    "Invalid background color" : {
       "comment" : "error"
     },
     "Make sure you are specifying the complete URL, including the scheme." : {
@@ -57,6 +60,12 @@
     },
     "Verify that the image file exists at that location." : {
       "comment" : "recovery suggestion"
+    },
+    "Video must be a local file" : {
+      "comment" : "error"
+    },
+    "Videos can only be played from local files, not from %@." : {
+      "comment" : "failure reason"
     }
   },
   "version" : "1.0"

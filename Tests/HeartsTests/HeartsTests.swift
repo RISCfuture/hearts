@@ -24,13 +24,13 @@ final class EmojiArtSpec: AsyncSpec {
   override static func spec() {
     describe("process") {
       it("converts an image into emoji-art") {
-        let instance = try await EmojiArt()
+        let instance = try EmojiArt()
         let string = try await instance.process(image: self.image)
         try await expect(string).toEventually(equal(self.result(for: "basic")))
       }
 
       it("permits a custom coherency") {
-        let instance = try await EmojiArt(coherency: 0.1)
+        let instance = try EmojiArt(coherency: 0.1)
         let string = try await instance.process(image: self.image)
         try await expect(string).toEventually(equal(self.result(for: "coherency")))
       }
@@ -43,13 +43,13 @@ final class EmojiArtSpec: AsyncSpec {
       }
 
       it("permits a custom group") {
-        let instance = try await EmojiArt(group: "hearts")
+        let instance = try EmojiArt(group: "hearts")
         let string = try await instance.process(image: self.image)
         try await expect(string).toEventually(equal(self.result(for: "group")))
       }
 
       it("permits a custom background color") {
-        let instance = try await EmojiArt()
+        let instance = try EmojiArt()
         let stringBlack = try await instance.process(image: self.transparentImage)
         try await expect(stringBlack).toEventually(equal(self.result(for: "transparent-black")))
 

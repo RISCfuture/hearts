@@ -1,12 +1,12 @@
 import Foundation
 
-actor Groups {
-  static let shared = try! Groups()  // swiftlint:disable:this force_try
+struct Groups: Sendable {
+  static let shared = try! Self()  // swiftlint:disable:this force_try
 
-  private let dataURL = Bundle.module.url(forResource: "groups", withExtension: "json")!
   private let groups: [String: Set<Character>]
 
   private init() throws {
+    let dataURL = Bundle.module.url(forResource: "groups", withExtension: "json")!
     let groups =
       try JSONSerialization.jsonObject(with: Data(contentsOf: dataURL)) as! [String: String]
     self.groups = groups.reduce(into: [:]) { dict, entry in
