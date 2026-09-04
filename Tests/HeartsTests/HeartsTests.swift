@@ -1,6 +1,7 @@
 import Nimble
 import Quick
 import XCTest
+import libCommon
 
 @testable import libHearts
 

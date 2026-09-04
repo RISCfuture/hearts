@@ -1,5 +1,5 @@
-import CoreGraphics
-import CoreImage
+package import CoreGraphics
+package import CoreImage
 import Foundation
 
 /// Converts a CIImage to a CGImage using a Core Image context.

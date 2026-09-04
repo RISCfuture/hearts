@@ -1,7 +1,7 @@
-import AVFoundation
-import CoreImage
+public import AVFoundation
+public import CoreImage
 import CoreMedia
-import Foundation
+public import Foundation
 
 /// Basic facts about a video file, available before decoding starts.
 public struct VideoInfo: Sendable {

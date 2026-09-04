@@ -1,6 +1,6 @@
-import CoreImage
+public import CoreImage
 import Foundation
-import libCommon
+public import libCommon
 
 /// Generates emoji-art from images by matching pixels to emoji colors.
 ///
