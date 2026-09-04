@@ -13,7 +13,7 @@ struct RealtimeSequenceTests {
   }
 
   @Test
-  func waitsForEachFramesPresentationTimeTreatingTheFirstFrameAsDueNow() async throws {
+  func `waits for each frame's presentation time, treating the first as due now`() async throws {
     let clock = TestClock()
     var received = [StubFrame]()
     let paced = Self.frames(atMilliseconds: [500, 600, 700]).pacedToRealtime(clock: clock)
@@ -28,7 +28,7 @@ struct RealtimeSequenceTests {
   }
 
   @Test
-  func skipsFramesWhosePresentationTimeHasAlreadyPassed() async throws {
+  func `skips frames whose presentation time has already passed`() async throws {
     let clock = TestClock()
     let paced = Self.frames(atMilliseconds: [0, 100, 200, 300]).pacedToRealtime(clock: clock)
     var iterator = paced.makeAsyncIterator()

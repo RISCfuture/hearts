@@ -6,7 +6,7 @@ import Testing
 @Suite
 struct VideoInfoTests {
   @Test
-  func appliesTheTrackRotationToItsSize() async throws {
+  func `applies the track rotation to its size`() async throws {
     let info = try await VideoInfo.load(url: Fixtures.rotatedVideo)
     #expect(info.size == CGSize(width: 16, height: 32))
   }
@@ -19,7 +19,7 @@ struct VideoFramesTests {
   }
 
   @Test
-  func decodesEveryFrameScaledToTheRequestedSizeWithItsPresentationTime() async throws {
+  func `decodes each frame scaled to the requested size with its presentation time`() async throws {
     let emojiArt = try EmojiArt(characters: Set("🟥🟩🟦"))
     let video = try await VideoInfo.load(url: Fixtures.basicVideo)
     var rendered = [String]()
@@ -35,10 +35,10 @@ struct VideoFramesTests {
   }
 
   @Test
-  func decodesRotatedVideoInItsDisplayOrientation() async throws {
+  func `decodes rotated video in its display orientation`() async throws {
     let emojiArt = try EmojiArt(characters: Set("🟥🟦"))
     let video = try await VideoInfo.load(url: Fixtures.rotatedVideo)
-    var iterator = VideoFrames(video: video, size: .init(width: 2, height: 4)).makeAsyncIterator()
+    let iterator = VideoFrames(video: video, size: .init(width: 2, height: 4)).makeAsyncIterator()
 
     let frame = try #require(try await iterator.next())
 
@@ -46,7 +46,7 @@ struct VideoFramesTests {
   }
 
   @Test
-  func throwsForAFileWithNoVideoTrack() async {
+  func `throws for a file with no video track`() async {
     await #expect(throws: libHearts.Error.self) {
       _ = try await VideoInfo.load(url: Fixtures.image)
     }
