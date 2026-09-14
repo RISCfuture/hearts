@@ -1,4 +1,4 @@
-// swift-tools-version: 6.3
+// swift-tools-version: 6.4
 // The swift-tools-version declares the minimum version of Swift required to build this package.
 
 import PackageDescription
@@ -15,7 +15,7 @@ let upcomingFeatures: [SwiftSetting] = [
 let package = Package(
   name: "Hearts",
   defaultLocalization: "en",
-  platforms: [.macOS(.v13)],
+  platforms: [.macOS(.v27)],
   products: [
     // Products define the executables and libraries a package produces, and make them visible to other packages.
     .library(name: "libHearts", targets: ["libHearts"]),
@@ -31,8 +31,6 @@ let package = Package(
       .upToNextMajor(from: "1.8.2")
     ),
     .package(url: "https://github.com/jkandzi/Progress.swift.git", .upToNextMajor(from: "0.4.0")),
-    .package(url: "https://github.com/Quick/Quick.git", from: "7.6.2"),
-    .package(url: "https://github.com/Quick/Nimble.git", from: "14.0.0"),
     .package(url: "https://github.com/apple/swift-docc-plugin", from: "1.5.0")
   ],
   targets: [
@@ -64,7 +62,7 @@ let package = Package(
     ),
     .testTarget(
       name: "HeartsTests",
-      dependencies: ["libHearts", "Nimble", "Quick"],
+      dependencies: ["libHearts"],
       resources: [.process("Resources")],
       swiftSettings: upcomingFeatures
     ),

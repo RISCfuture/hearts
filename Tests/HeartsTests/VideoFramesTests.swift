@@ -57,4 +57,5 @@ enum Fixtures {
   static let basicVideo = Bundle.module.url(forResource: "basic", withExtension: "mov")!
   static let rotatedVideo = Bundle.module.url(forResource: "rotated", withExtension: "mov")!
   static let image = Bundle.module.url(forResource: "basic", withExtension: "png")!
+  static let transparentImage = Bundle.module.url(forResource: "transparent", withExtension: "png")!
 }
