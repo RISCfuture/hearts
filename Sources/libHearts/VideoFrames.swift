@@ -1,6 +1,7 @@
 public import AVFoundation
 public import CoreImage
 import CoreMedia
+import CoreVideo
 public import Foundation
 
 /// Basic facts about a video file, available before decoding starts.
@@ -95,10 +96,13 @@ public struct VideoFrames: AsyncSequence, Sendable {
 
   /// The iterator for ``VideoFrames``. It owns the underlying asset reader.
   public final class Iterator: AsyncIteratorProtocol {
+    private typealias Sample = CMReadySampleBuffer<CMSampleBuffer.DynamicContent>
+    private typealias SampleProvider = AVAssetReaderOutput.Provider<Sample>
+
     private let video: VideoInfo
     private let size: CGSize
     private var reader: AVAssetReader?
-    private var output: AVAssetReaderTrackOutput?
+    private var provider: SampleProvider?
 
     private var outputSettings: [String: Any] {
       let decodeSize = video.decodeSize(for: size)
@@ -119,40 +123,53 @@ public struct VideoFrames: AsyncSequence, Sendable {
     /// - Throws: ``Error/badVideo`` if the file cannot be opened or decoded.
     @concurrent
     public func next() async throws -> VideoFrame? {
-      let output = try await startReadingIfNeeded()
-      guard let sampleBuffer = output.copyNextSampleBuffer() else {
+      let provider = try await startReadingIfNeeded()
+      guard let sample = try await nextSample(from: provider) else {
         try verifyReaderFinished()
         return nil
       }
-      return try frame(from: sampleBuffer)
+      return try frame(from: sample)
     }
 
-    private func startReadingIfNeeded() async throws -> AVAssetReaderTrackOutput {
-      if let output { return output }
+    private func startReadingIfNeeded() async throws -> SampleProvider {
+      if let provider { return provider }
 
       let asset = AVURLAsset(url: video.url)
       let track = try await asset.firstVideoTrack()
       let reader = try AVAssetReader(asset: asset)
       let output = AVAssetReaderTrackOutput(track: track, outputSettings: outputSettings)
       guard reader.canAdd(output) else { throw Error.badVideo }
-      reader.add(output)
-      guard reader.startReading() else { throw Error.badVideo }
+      let provider = reader.outputProvider(for: output)
+      do { try reader.start() } catch { throw Error.badVideo }
 
       self.reader = reader
-      self.output = output
-      return output
+      self.provider = provider
+      return provider
+    }
+
+    /// Pulls the next decoded sample, leaving cancellation to propagate untouched.
+    private func nextSample(from provider: SampleProvider) async throws -> Sample? {
+      do {
+        return try await provider.next()
+      } catch is CancellationError {
+        throw CancellationError()
+      } catch {
+        throw Error.badVideo
+      }
     }
 
     private func verifyReaderFinished() throws {
       guard reader?.status == .completed else { throw Error.badVideo }
     }
 
-    private func frame(from sampleBuffer: CMSampleBuffer) throws -> VideoFrame {
-      let time = sampleBuffer.presentationTimeStamp
-      guard time.isNumeric, let pixelBuffer = sampleBuffer.imageBuffer else { throw Error.badVideo }
+    private func frame(from sample: Sample) throws -> VideoFrame {
+      let time = sample.presentationTimeStamp
+      guard time.isNumeric, case .pixelBuffer(let pixelBuffer) = sample.content else {
+        throw Error.badVideo
+      }
       return .init(
         presentationTime: .seconds(time.value) / Int(time.timescale),
-        image: CIImage(cvPixelBuffer: pixelBuffer).oriented(by: video.preferredTransform)
+        image: pixelBuffer.image.oriented(by: video.preferredTransform)
       )
     }
   }
@@ -169,6 +186,16 @@ extension AVAsset {
 
 extension CGSize {
   fileprivate var absolute: CGSize { .init(width: abs(width), height: abs(height)) }
+}
+
+extension CVReadOnlyPixelBuffer {
+  /// The pixels of the buffer, wrapped for Core Image.
+  ///
+  /// `CIImage` retains the buffer it is created from and only ever reads it, so
+  /// borrowing the underlying `CVPixelBuffer` keeps the read-only guarantee intact.
+  fileprivate var image: CIImage {
+    withUnsafeBuffer { CIImage(cvPixelBuffer: $0) }
+  }
 }
 
 extension CIImage {

@@ -1,63 +1,59 @@
-import Nimble
-import Quick
-import XCTest
+import CoreImage
+import Foundation
+import Testing
 import libCommon
 
 @testable import libHearts
 
-final class EmojiArtSpec: AsyncSpec {
-  static var image: CIImage {
-    let url = Bundle.module.url(forResource: "basic", withExtension: "png")!
-    return .init(contentsOf: url)!
+@Suite
+struct `Emoji art processing` {
+  private static func image(at url: URL) throws -> CIImage {
+    try #require(CIImage(contentsOf: url))
   }
 
-  static var transparentImage: CIImage {
-    let url = Bundle.module.url(forResource: "transparent", withExtension: "png")!
-    return .init(contentsOf: url)!
+  private static func expected(_ name: String) throws -> String {
+    let url = try #require(Bundle.module.url(forResource: name, withExtension: "txt"))
+    return try String(contentsOf: url, encoding: .utf8).trimmingCharacters(in: .newlines)
   }
 
-  private static func result(for name: String) throws -> String {
-    let url = Bundle.module.url(forResource: name, withExtension: "txt")!
-    let string = try String(contentsOf: url, encoding: .utf8)
-    return string.trimmingCharacters(in: .newlines)
+  @Test
+  func `converts an image into emoji-art`() async throws {
+    let emojiArt = try EmojiArt()
+    let string = try await emojiArt.process(image: Self.image(at: Fixtures.image))
+    #expect(string == (try Self.expected("basic")))
   }
 
-  override static func spec() {
-    describe("process") {
-      it("converts an image into emoji-art") {
-        let instance = try EmojiArt()
-        let string = try await instance.process(image: self.image)
-        try await expect(string).toEventually(equal(self.result(for: "basic")))
-      }
+  @Test
+  func `permits a custom coherency`() async throws {
+    let emojiArt = try EmojiArt(coherency: 0.1)
+    let string = try await emojiArt.process(image: Self.image(at: Fixtures.image))
+    #expect(string == (try Self.expected("coherency")))
+  }
 
-      it("permits a custom coherency") {
-        let instance = try EmojiArt(coherency: 0.1)
-        let string = try await instance.process(image: self.image)
-        try await expect(string).toEventually(equal(self.result(for: "coherency")))
-      }
+  @Test
+  func `permits a custom character set`() async throws {
+    let emojiArt = try EmojiArt(characters: Set("📕📗📘📙📔📓"))
+    let string = try await emojiArt.process(image: Self.image(at: Fixtures.image))
+    #expect(string == (try Self.expected("chars")))
+  }
 
-      it("permits a custom character set") {
-        let chars = Set("📕📗📘📙📔📓")
-        let instance = try EmojiArt(characters: chars)
-        let string = try await instance.process(image: self.image)
-        try await expect(string).toEventually(equal(self.result(for: "chars")))
-      }
+  @Test
+  func `permits a custom group`() async throws {
+    let emojiArt = try EmojiArt(group: "hearts")
+    let string = try await emojiArt.process(image: Self.image(at: Fixtures.image))
+    #expect(string == (try Self.expected("group")))
+  }
 
-      it("permits a custom group") {
-        let instance = try EmojiArt(group: "hearts")
-        let string = try await instance.process(image: self.image)
-        try await expect(string).toEventually(equal(self.result(for: "group")))
-      }
+  @Test
+  func `permits a custom background color`() async throws {
+    let emojiArt = try EmojiArt()
+    let transparent = try Self.image(at: Fixtures.transparentImage)
 
-      it("permits a custom background color") {
-        let instance = try EmojiArt()
-        let stringBlack = try await instance.process(image: self.transparentImage)
-        try await expect(stringBlack).toEventually(equal(self.result(for: "transparent-black")))
+    let black = try await emojiArt.process(image: transparent)
+    #expect(black == (try Self.expected("transparent-black")))
 
-        await instance.setBackgroundColor(try .init(red: 1, green: 1, blue: 1))
-        let stringWhite = try await instance.process(image: self.transparentImage)
-        try await expect(stringWhite).toEventually(equal(self.result(for: "transparent-white")))
-      }
-    }
+    await emojiArt.setBackgroundColor(try .init(red: 1, green: 1, blue: 1))
+    let white = try await emojiArt.process(image: transparent)
+    #expect(white == (try Self.expected("transparent-white")))
   }
 }
