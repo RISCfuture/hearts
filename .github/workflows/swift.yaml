@@ -33,7 +33,7 @@ jobs:
         run: swift test -v
   lint:
     name: Run SwiftLint
-    runs-on: macos-latest
+    runs-on: xcode-27
     steps:
       - uses: actions/checkout@v6
       - name: Install SwiftLint
