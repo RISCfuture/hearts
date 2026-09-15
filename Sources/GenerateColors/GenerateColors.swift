@@ -49,7 +49,7 @@ struct GenerateColors: AsyncParsableCommand {
       throw Error.drawingError
     }
     guard
-      let context = CGContext(
+      let context = unsafe CGContext(
         data: nil,
         width: extent,
         height: extent,
@@ -62,7 +62,10 @@ struct GenerateColors: AsyncParsableCommand {
       throw Error.drawingError
     }
 
-    let path = CGPath(rect: CGRect(x: 0, y: 0, width: extent, height: extent), transform: nil)
+    let path = unsafe CGPath(
+      rect: CGRect(x: 0, y: 0, width: extent, height: extent),
+      transform: nil
+    )
     let font = CTFont(.system, size: CGFloat(Double(extent) * 0.75))
     let attributes = [
       kCTFontAttributeName: font

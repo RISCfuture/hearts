@@ -23,7 +23,7 @@ package func cgImagePixels(_ image: CGImage) -> PixelSequence? {
   let bitmapInfo =
     CGBitmapInfo.byteOrder32Big.rawValue | CGImageAlphaInfo.premultipliedLast.rawValue
   guard
-    let context = CGContext(
+    let context = unsafe CGContext(
       data: nil,
       width: image.width,
       height: image.height,
@@ -36,12 +36,12 @@ package func cgImagePixels(_ image: CGImage) -> PixelSequence? {
     return nil
   }
   context.draw(image, in: CGRect(x: 0, y: 0, width: image.width, height: image.height))
-  guard let data = context.data else { return nil }
+  guard let data = unsafe context.data else { return nil }
 
   // The context owns the bitmap — `image.height` rows of `image.width * 4` bytes — and
   // frees it when released, so the copy has to happen while the context is still alive.
   return withExtendedLifetime(context) {
-    PixelSequence(Data(bytes: data, count: image.width * image.height * 4))
+    PixelSequence(unsafe Data(bytes: data, count: image.width * image.height * 4))
   }
 }
 
