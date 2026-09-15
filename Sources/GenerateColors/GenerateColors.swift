@@ -1,8 +1,8 @@
 import ArgumentParser
 import CoreGraphics
 import CoreText
+import Darwin
 import Foundation
-import Progress
 import libCommon
 
 @main
@@ -199,21 +199,54 @@ enum Error: Swift.Error {
   case pixelDataError
 }
 
+/// Tracks how many drawing and averaging tasks have finished, drawing a progress bar on a terminal.
 actor ProgressWrapper {
   static let shared = ProgressWrapper()
 
   private static let operations = 2
+  private static let maximumBarWidth = 40
+  private static let fallbackTerminalWidth = 80
 
-  private var progress: ProgressBar!
+  private let isTerminal = isatty(STDOUT_FILENO) != 0
+  private let terminalWidth = ProgressWrapper.terminalWidth()
+  private var progress: ProgressManager?
 
   private init() {
   }
 
+  private static func terminalWidth() -> Int {
+    var window = winsize()
+    guard unsafe ioctl(STDOUT_FILENO, TIOCGWINSZ, &window) == 0, window.ws_col > 0 else {
+      return fallbackTerminalWidth
+    }
+    return Int(window.ws_col)
+  }
+
   func setTotal(_ count: Int) {
-    progress = ProgressBar(count: count * Self.operations)
+    progress = ProgressManager(totalCount: count * Self.operations)
   }
 
   func next() {
-    progress.next()
+    guard let progress else { return }
+    progress.complete(count: 1)
+    draw(progress)
+  }
+
+  private func draw(_ progress: ProgressManager) {
+    guard isTerminal else { return }
+
+    let counts = " \(progress.completedCount)/\(progress.totalCount.map(String.init) ?? "?")"
+    let width = max(0, min(Self.maximumBarWidth, terminalWidth - counts.count - 3))
+    let filled = Int(progress.fractionCompleted * Double(width))
+    let bar =
+      String(repeating: "\u{2588}", count: filled)
+      + String(repeating: "\u{2591}", count: width - filled)
+
+    write("\r[\(bar)]\(counts)")
+    if progress.isFinished { write("\n") }
+  }
+
+  private func write(_ string: String) {
+    FileHandle.standardOutput.write(Data(string.utf8))
   }
 }
