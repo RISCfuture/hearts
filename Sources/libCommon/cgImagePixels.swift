@@ -38,7 +38,11 @@ package func cgImagePixels(_ image: CGImage) -> PixelSequence? {
   context.draw(image, in: CGRect(x: 0, y: 0, width: image.width, height: image.height))
   guard let data = context.data else { return nil }
 
-  return .init(Data(bytes: data, count: image.width * image.height * 4))
+  // The context owns the bitmap — `image.height` rows of `image.width * 4` bytes — and
+  // frees it when released, so the copy has to happen while the context is still alive.
+  return withExtendedLifetime(context) {
+    PixelSequence(Data(bytes: data, count: image.width * image.height * 4))
+  }
 }
 
 /// A sequence that iterates over pixels in an image.
