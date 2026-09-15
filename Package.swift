@@ -31,7 +31,6 @@ let package = Package(
       url: "https://github.com/apple/swift-argument-parser.git",
       .upToNextMajor(from: "1.8.2")
     ),
-    .package(url: "https://github.com/jkandzi/Progress.swift.git", .upToNextMajor(from: "0.4.0")),
     .package(url: "https://github.com/apple/swift-docc-plugin", from: "1.5.0")
   ],
   targets: [
@@ -71,8 +70,7 @@ let package = Package(
       name: "GenerateColors",
       dependencies: [
         "libCommon",
-        .product(name: "ArgumentParser", package: "swift-argument-parser"),
-        .product(name: "Progress", package: "Progress.swift")
+        .product(name: "ArgumentParser", package: "swift-argument-parser")
       ],
       resources: [.process("Resources")],
       swiftSettings: swiftSettings
