@@ -3,13 +3,14 @@
 
 import PackageDescription
 
-let upcomingFeatures: [SwiftSetting] = [
+let swiftSettings: [SwiftSetting] = [
   .enableUpcomingFeature("NonisolatedNonsendingByDefault"),
   .enableUpcomingFeature("InferIsolatedConformances"),
   .enableUpcomingFeature("ImmutableWeakCaptures"),
   .enableUpcomingFeature("MemberImportVisibility"),
   .enableUpcomingFeature("ExistentialAny"),
-  .enableUpcomingFeature("InternalImportsByDefault")
+  .enableUpcomingFeature("InternalImportsByDefault"),
+  .strictMemorySafety()
 ]
 
 let package = Package(
@@ -39,7 +40,7 @@ let package = Package(
     .target(
       name: "libCommon",
       resources: [.process("Localizable.xcstrings")],
-      swiftSettings: upcomingFeatures
+      swiftSettings: swiftSettings
     ),
     .target(
       name: "libHearts",
@@ -49,7 +50,7 @@ let package = Package(
         .copy("Resources/groups.json"),
         .process("Localizable.xcstrings")
       ],
-      swiftSettings: upcomingFeatures
+      swiftSettings: swiftSettings
     ),
     .executableTarget(
       name: "Hearts",
@@ -58,13 +59,13 @@ let package = Package(
         .product(name: "ArgumentParser", package: "swift-argument-parser")
       ],
       resources: [.process("Localizable.xcstrings")],
-      swiftSettings: upcomingFeatures
+      swiftSettings: swiftSettings
     ),
     .testTarget(
       name: "HeartsTests",
       dependencies: ["libHearts"],
       resources: [.process("Resources")],
-      swiftSettings: upcomingFeatures
+      swiftSettings: swiftSettings
     ),
     .executableTarget(
       name: "GenerateColors",
@@ -74,21 +75,21 @@ let package = Package(
         .product(name: "Progress", package: "Progress.swift")
       ],
       resources: [.process("Resources")],
-      swiftSettings: upcomingFeatures
+      swiftSettings: swiftSettings
     ),
     .executableTarget(
       name: "GenerateGroups",
       dependencies: [
         .product(name: "ArgumentParser", package: "swift-argument-parser")
       ],
-      swiftSettings: upcomingFeatures
+      swiftSettings: swiftSettings
     ),
     .executableTarget(
       name: "GenerateCharacters",
       dependencies: [
         .product(name: "ArgumentParser", package: "swift-argument-parser")
       ],
-      swiftSettings: upcomingFeatures
+      swiftSettings: swiftSettings
     )
   ],
   swiftLanguageModes: [.v6]

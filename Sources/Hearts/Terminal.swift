@@ -23,7 +23,7 @@ struct Terminal: Sendable {
 
   private static func querySize() -> Size {
     var window = winsize()
-    guard isatty(STDOUT_FILENO) != 0, ioctl(STDOUT_FILENO, TIOCGWINSZ, &window) == 0,
+    guard isatty(STDOUT_FILENO) != 0, unsafe ioctl(STDOUT_FILENO, TIOCGWINSZ, &window) == 0,
       window.ws_col > 0, window.ws_row > 0
     else { return fallbackSize }
     return .init(columns: Int(window.ws_col), rows: Int(window.ws_row))
