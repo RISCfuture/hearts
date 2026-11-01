@@ -15,12 +15,12 @@ jobs:
     name: Build
     runs-on: xcode-27
     steps:
-      - uses: actions/checkout@v6
-      - uses: maxim-lobanov/setup-xcode@v1
+      - uses: actions/checkout@v7.0.1
+      - uses: maxim-lobanov/setup-xcode@v1.7.0
         with:
           xcode-version: latest
       - name: Cache SwiftPM build products
-        uses: actions/cache@v6
+        uses: actions/cache@v6.1.0
         with:
           path: |
             .build
@@ -35,7 +35,7 @@ jobs:
     name: Run SwiftLint
     runs-on: xcode-27
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7.0.1
       - name: Install SwiftLint
         run: brew install swiftlint
       - name: Run SwiftLint
@@ -44,9 +44,9 @@ jobs:
     name: Run swift-format
     runs-on: ubuntu-latest
     container:
-      image: swift:6.3
+      image: swift:6.4
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7.0.1
       - name: Download .swift-format config
         run: |
           apt-get update && apt-get install -y wget
@@ -57,12 +57,12 @@ jobs:
     name: Build Documentation
     runs-on: xcode-27
     steps:
-      - uses: actions/checkout@v6
-      - uses: maxim-lobanov/setup-xcode@v1
+      - uses: actions/checkout@v7.0.1
+      - uses: maxim-lobanov/setup-xcode@v1.7.0
         with:
           xcode-version: latest
       - name: Cache SwiftPM build products
-        uses: actions/cache@v6
+        uses: actions/cache@v6.1.0
         with:
           path: |
             .build
