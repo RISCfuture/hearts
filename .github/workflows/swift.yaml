@@ -11,9 +11,15 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  route:
+    uses: RISCfuture/ci-workflows/.github/workflows/minerva-route.yml@1.1.0
+    permissions:
+      contents: read
   tests:
     name: Build
-    runs-on: xcode-27
+    needs: route
+    # Executes the macOS 27 test products on the macOS 27 pool.
+    runs-on: ${{ fromJSON(needs.route.outputs.macos-27) }}
     steps:
       - uses: actions/checkout@v7.0.1
       - uses: maxim-lobanov/setup-xcode@v1.7.0
@@ -33,7 +39,8 @@ jobs:
         run: swift test -v
   lint:
     name: Run SwiftLint
-    runs-on: xcode-27
+    needs: route
+    runs-on: ${{ fromJSON(needs.route.outputs.xcode-27) }}
     steps:
       - uses: actions/checkout@v7.0.1
       - name: Install SwiftLint
@@ -55,7 +62,8 @@ jobs:
         run: swift format lint --strict -r .
   documentation:
     name: Build Documentation
-    runs-on: xcode-27
+    needs: route
+    runs-on: ${{ fromJSON(needs.route.outputs.xcode-27) }}
     steps:
       - uses: actions/checkout@v7.0.1
       - uses: maxim-lobanov/setup-xcode@v1.7.0
